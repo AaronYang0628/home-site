@@ -1,0 +1,7 @@
+site_name: AY Dev Docs
+site_url: https://docs.ay.72602.online
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/git-alt
+repo_url: https://github.com/squidfunk/mkdocs-material
