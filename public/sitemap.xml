@@ -2,12 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://localhost:1313/aaron/index.html</loc>
+    <lastmod>2025-10-07T15:00:59+08:00</lastmod>
+  </url>
+  <url>
+    <loc>http://localhost:1313/api/index.html</loc>
+  </url>
+  <url>
+    <loc>http://localhost:1313/apps/index.html</loc>
+  </url>
+  <url>
+    <loc>http://localhost:1313/licorice/articles/index.html</loc>
   </url>
   <url>
     <loc>http://localhost:1313/categories/index.html</loc>
   </url>
   <url>
     <loc>http://localhost:1313/licorice/index.html</loc>
+  </url>
+  <url>
+    <loc>http://localhost:1313/ops/index.html</loc>
+  </url>
+  <url>
+    <loc>http://localhost:1313/api/petstore/index.html</loc>
+  </url>
+  <url>
+    <loc>http://localhost:1313/ops/proxy/index.html</loc>
+  </url>
+  <url>
+    <loc>http://localhost:1313/routes/index.html</loc>
   </url>
   <url>
     <loc>http://localhost:1313/tags/index.html</loc>

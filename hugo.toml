@@ -1,35 +1,26 @@
 baseURL = 'https://72602.online'
 languageCode = 'en-us'
 theme = 'hugo-theme-relearn'
+[author]
+  email = 'aaron19940628@gmail.com'
+  name = 'Aaron Yang'
+[markup.goldmark.renderer]
+    unsafe = true
 [params]
   linkTitle = '72602'
   disableLandingPageButton = true
   showVisitedLinks = true
   menuPre = '<i class="fab fa-github"></i> '
-  themeVariant = ['72602','auto']
+  themeVariant = '72602'
+  [params.openapi]
+    force = true
+  [linkEffects]
+    download = false
+    bg-white = true
+    target = '_blank'
   [params.search]
     disable = true
-
     [params.search.index]
       disable = true
-
     [params.search.page]
       disable = true
-[menu]
-  [[menu.shortcuts]]
-    name = 'Parent 1'
-    weight = 1
-
-  [[menu.shortcuts]]
-    name = 'Child 1'
-    parent = 'Parent 1'
-    url = 'https://example.com/1'
-
-  [[menu.shortcuts]]
-    name = 'Parent 2'
-    weight = 2
-
-  [[menu.shortcuts]]
-    name = 'Child 2'
-    parent = 'Parent 2'
-    url = 'https://example.com/2'

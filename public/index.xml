@@ -3,16 +3,31 @@
   <channel>
     <title></title>
     <link>http://localhost:1313/index.html</link>
-    <description>Python Example&#xD;Terminal Example&#xD;C Example&#xD;C Example&#xD;C Example&#xD;C Example</description>
+    <description>Caution Advises about risks or negative outcomes of certain actions.&#xA;just name Documents My Documents simple icons Documents My Documents not so simple icons a.png a with border.png mindblowing icons text.md alternative text.md and now with color script.php alt script.php magic.php 非严肃辟谣&#xD;微信公众号&#xD;Terminal Example&#xD;For guys who like to tinker around.</description>
     <generator>Hugo</generator>
     <language>en-us</language>
+    <lastBuildDate>Tue, 07 Oct 2025 15:00:59 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Aaron</title>
       <link>http://localhost:1313/aaron/index.html</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 07 Oct 2025 15:00:59 +0800</pubDate>
       <guid>http://localhost:1313/aaron/index.html</guid>
-      <description>Aaron Section</description>
+      <description>Aaron Section&#xA;For now, I already have a dev docs site [https://aaronyang0628.github.io/docs/]. I’ wondering whether should I merge it into this site or not?</description>
+    </item>
+    <item>
+      <title>API</title>
+      <link>http://localhost:1313/api/index.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/api/index.html</guid>
+      <description>just name Documents My Documents simple icons Documents My Documents not so simple icons a.png a with border.png mindblowing icons text.md alternative text.md and now with color script.php alt script.php magic.php</description>
+    </item>
+    <item>
+      <title>Apps</title>
+      <link>http://localhost:1313/apps/index.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/apps/index.html</guid>
+      <description>Apps Section</description>
     </item>
     <item>
       <title>Licorice</title>
@@ -20,6 +35,20 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/licorice/index.html</guid>
       <description>Licorice Section</description>
+    </item>
+    <item>
+      <title>Ops</title>
+      <link>http://localhost:1313/ops/index.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/ops/index.html</guid>
+      <description>Ops Section</description>
+    </item>
+    <item>
+      <title>Routes</title>
+      <link>http://localhost:1313/routes/index.html</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/routes/index.html</guid>
+      <description>Routes Section</description>
     </item>
   </channel>
 </rss>
