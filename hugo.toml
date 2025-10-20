@@ -7,9 +7,11 @@ theme = 'hugo-theme-relearn'
 [markup.goldmark.renderer]
     unsafe = true
 [params]
-  linkTitle = '72602'
   disableLandingPageButton = true
+  externalLinkTarget = '_blank'
+  linkTitle = '72602'
   showVisitedLinks = true
+  mermaidZoom = false
   menuPre = '<i class="fab fa-github"></i> '
   themeVariant = '72602'
   [params.openapi]
@@ -24,3 +26,34 @@ theme = 'hugo-theme-relearn'
       disable = true
     [params.search.page]
       disable = true
+[menu]
+  [[menu.shortcuts]]
+    name = 'Hugo'
+    weight = 1
+  [[menu.shortcuts]]
+    name = '<i class="fab fa-js-square"></i> Relean Theme'
+    parent = 'Hugo'
+    url = 'https://mcshelby.github.io/hugo-theme-relearn/'
+  [[menu.shortcuts]]
+    name = '<i class="fas fa-flag"></i> FontAwesome'
+    parent = 'Hugo'
+    url = 'https://fontawesome.com/v6/search?o=r'
+  [[menu.shortcuts]]
+    name = 'Pages'
+    weight = 2
+  [[menu.shortcuts]]
+    name = '<i class="fa-brands fa-github"></i> AY DEV'
+    parent = 'Pages'
+    url = 'https://aaronyang0628.github.io/docs/'
+  [[menu.shortcuts]]
+    name = '<i class="fas fa-chart-pie"></i> SkyWork AI'
+    parent = 'Pages'
+    url = 'https://skywork.ai/'
+  [[menu.shortcuts]]
+    name = 'Ops'
+    weight = 3
+  [[menu.shortcuts]]
+    name = '<i class="fas fa-chart-pie"></i> Aliyun'
+    parent = 'Ops'
+    url = 'https://home.console.aliyun.com/home/dashboard/ProductAndService'
+  

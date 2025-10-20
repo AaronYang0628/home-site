@@ -29,6 +29,9 @@
     <loc>http://localhost:1313/ops/proxy/index.html</loc>
   </url>
   <url>
+    <loc>http://localhost:1313/ops/proxy/ops/index.html</loc>
+  </url>
+  <url>
     <loc>http://localhost:1313/routes/index.html</loc>
   </url>
   <url>
