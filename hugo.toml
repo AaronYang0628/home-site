@@ -9,7 +9,7 @@ title = '72602 Port'
     unsafe = true
 [relearn]
   [relearn.dependencies]
-    [relearn.dependencies.myshortcode]
+    [relearn.dependencies.mapbox]
       name = 'mapbox'
 [params]
   disableLandingPageButton = true

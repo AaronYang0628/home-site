@@ -8,6 +8,7 @@ type = "home"
 > Advises about risks or negative outcomes of certain actions.
 
 
+{{< mapbox lng=121.485 lat=31.233 zoom=12 >}}
 
 ```tree
 - [just name](http://example.com) | folder
