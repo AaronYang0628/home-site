@@ -4,9 +4,11 @@
 
 - Basic Components:
     - Proxy[Bridge]:
+        icon: haproxy
         href: http://47.110.67.161:32080/main/index
         description: GoProxy Bridge Service
     - Proxy[Client]:
+        icon: haproxy
         href: http://47.110.67.161:30080/main/index
         description: GoProxy Client Service
 

@@ -40,7 +40,7 @@ title = '72602 Port'
     parent = 'Hugo'
     url = 'https://mcshelby.github.io/hugo-theme-relearn/'
   [[menu.shortcuts]]
-    name = '<i class="fas fa-flag"></i> FontAwesome'
+    name = '<i class="fa-brands fa-font-awesome"></i> FontAwesome'
     parent = 'Hugo'
     url = 'https://fontawesome.com/v6/search?o=r'
   [[menu.shortcuts]]
@@ -61,4 +61,8 @@ title = '72602 Port'
     name = '<i class="fa-solid fa-cloud"></i> Aliyun'
     parent = 'Ops'
     url = 'https://home.console.aliyun.com/home/dashboard/ProductAndService'
+  [[menu.shortcuts]]
+    name = '<i class="fa-brands fa-watchman-monitoring"></i> HomePage'
+    parent = 'Ops'
+    url = 'http://home.72602.online'
   

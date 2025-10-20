@@ -11,11 +11,16 @@
         - abbr: Ali
           href: https://home.console.aliyun.com/home/dashboard/ProductAndService
     - FontAwesome:
-        - abbr: FontA
+        - abbr: FA
+          icon: fontawesome
           href: https://fontawesome.com/v6/search?o=r
     - Skywork:
         - abbr: SKY
           href: https://skywork.ai/
+    - ICON:
+        - abbr: IC
+          icon: dashboard-icons-dark
+          href: https://dashboardicons.com/
 
 - Social:
     - Reddit:
@@ -25,7 +30,9 @@
 - Entertainment:
     - YouTube:
         - abbr: YT
+          icon: youtube
           href: https://youtube.com/
     - Bilibili:
         - abbr: BB
+          icon: bilibili
           href: https://bilibili.com/
