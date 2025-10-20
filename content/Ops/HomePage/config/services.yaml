@@ -2,10 +2,13 @@
 # For configuration options and examples, please see:
 # https://gethomepage.dev/configs/services/
 
-- My First Group:
-    - My First Service:
-        href: http://localhost/
-        description: Homepage is awesome
+- Basic Components:
+    - Proxy[Bridge]:
+        href: http://47.110.67.161:32080/main/index
+        description: GoProxy Bridge Service
+    - Proxy[Client]:
+        href: http://47.110.67.161:30080/main/index
+        description: GoProxy Client Service
 
 - My Second Group:
     - My Second Service:

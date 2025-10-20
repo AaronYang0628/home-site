@@ -5,7 +5,17 @@
 - Developer:
     - Github:
         - abbr: GH
-          href: https://github.com/
+          icon: github
+          href: https://github.com/AaronYang0628
+    - Aliyun:
+        - abbr: Ali
+          href: https://home.console.aliyun.com/home/dashboard/ProductAndService
+    - FontAwesome:
+        - abbr: FontA
+          href: https://fontawesome.com/v6/search?o=r
+    - Skywork:
+        - abbr: SKY
+          href: https://skywork.ai/
 
 - Social:
     - Reddit:
@@ -16,3 +26,6 @@
     - YouTube:
         - abbr: YT
           href: https://youtube.com/
+    - Bilibili:
+        - abbr: BB
+          href: https://bilibili.com/
