@@ -14,9 +14,19 @@ If your VPS is a Linux 64-bit system, you only need to execute the following sen
 > [!IMPORTANT]
 > All operations require `root` privileges.
 
+{{< tabs groupid="proxy-binary" style="transparent" >}}
+{{% tab title="github" icon="fa-brands fa-github" %}}
 ```shell
-curl -L https://mirrors.host900.com/https://raw.githubusercontent.com/snail007/proxy_admin_free/master/install_auto.sh | bash
+curl -L https://github.com/snail007/proxy_admin_free/blob/master/install_auto.sh | bash  
 ```
+{{% /tab %}}
+{{% tab title="NFS" icon="fa-solid fa-hard-drive"%}}
+```shell
+wget -o /root/proxy-admin_linux-amd64.tar.gz https://github.com/snail007/proxy_admin_free/blob/master/proxy-admin_linux-amd64.tar.gz
+```
+{{% /tab %}}
+{{< /tabs >}}
+
 
 When the installation completed, configuration directory is `/etc/gpa`. For more detailed usage, please refer to the manual directory above to learn more about the features you want to use.
 

@@ -8,6 +8,7 @@ type = "home"
 > Advises about risks or negative outcomes of certain actions.
 
 
+
 ```tree
 - [just name](http://example.com) | folder
   - Documents

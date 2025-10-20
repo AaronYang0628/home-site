@@ -1,11 +1,16 @@
 baseURL = 'https://72602.online'
 languageCode = 'en-us'
 theme = 'hugo-theme-relearn'
+title = '72602 Port'
 [author]
   email = 'aaron19940628@gmail.com'
   name = 'Aaron Yang'
 [markup.goldmark.renderer]
     unsafe = true
+[relearn]
+  [relearn.dependencies]
+    [relearn.dependencies.myshortcode]
+      name = 'mapbox'
 [params]
   disableLandingPageButton = true
   externalLinkTarget = '_blank'
@@ -53,7 +58,7 @@ theme = 'hugo-theme-relearn'
     name = 'Ops'
     weight = 3
   [[menu.shortcuts]]
-    name = '<i class="fas fa-chart-pie"></i> Aliyun'
+    name = '<i class="fa-solid fa-cloud"></i> Aliyun'
     parent = 'Ops'
     url = 'https://home.console.aliyun.com/home/dashboard/ProductAndService'
   

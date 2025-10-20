@@ -4,28 +4,16 @@ title = "PorxyAdmin Ops"
 hidden = true
 +++
 
+### Bridge +  Server
+[<i class="fa-solid fa-link"></i> proxy-admin web page (https://server.proxy.72602.online)](http://47.110.67.161:32080/login/index)
 
-More Infomation, you can check this link: [https://github.com/snail007/proxy_admin_free](https://github.com/snail007/proxy_admin_free)
-1. download proxy admin binary
-{{< tabs groupid="proxy-binary" style="transparent" >}}
-{{% tab title="github" icon="fa-brands fa-github" %}}
-```shell
-curl -L https://github.com/snail007/proxy_admin_free/blob/master/install_auto.sh | bash  
-```
-{{% /tab %}}
-{{% tab title="NFS" icon="fa-solid fa-hard-drive"%}}
-```shell
-wget -o /root/proxy-admin_linux-amd64.tar.gz https://github.com/snail007/proxy_admin_free/blob/master/proxy-admin_linux-amd64.tar.gz
-```
-{{% /tab %}}
-{{< /tabs >}}
+### Client
+[<i class="fa-solid fa-link"></i> proxy-client web page (https://client.proxy.72602.online)](http://47.110.67.161:30080/login/index)
 
-2. install proxy-admin
-{{< tabs groupid="proxy-binary" >}}
-{{% tab title="github" icon="fa-brands fa-github" %}}
-Just wait, it will install automatically
-{{% /tab %}}
-{{% tab title="NFS" icon="fa-solid fa-hard-drive"%}}
+
+### CheatSheet
+
+1. install script
 ```shell
 #!/bin/bash
 
@@ -53,11 +41,9 @@ echo  -e ">>> configuration path /etc/gpa\n"
 echo  -e ">>> uninstall just exec : /usr/local/bin/proxy-admin uninstall && rm /etc/gpa\n"
 echo  -e ">>> please visit : http://YOUR_IP:32080/ username: root, password: 123\n"
 ```
-{{% /tab %}}
-{{< /tabs >}}
 
 
-3. check proxy-admin status
+2. check proxy-admin status
 ```shell
 systemctl status proxyadmin
 ```
