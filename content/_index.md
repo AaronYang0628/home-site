@@ -56,11 +56,11 @@ gitGraph:
 ```
 
 {{< cards >}}
-{{% card title="Aaron Yang" image="images/mona.jpg" %}}
+{{% card title="Aaron Yang" image="images/mona.jpg" href="./Aaron/_index.md" %}}
 - {{% icon icon="heart" color="red" %}} Found My Lovly Wife
 - {{% icon icon="fa-solid fa-heart-pulse" color="purple" %}} Live to **100** years old first
 {{% /card %}}
-{{% card title="Licorice Chen" image="images/licorice.jpg" %}}
+{{% card title="Licorice Chen" image="images/licorice.jpg" href="./Licorice/_index.md" %}}
 {{% /card %}}
 {{% card title="?????" image="images/unknown.png" %}}
 {{% /card %}}

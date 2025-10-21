@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hugo-blog
+  namespace: application
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/yourusername/your-hugo-blog.git'
+    targetRevision: main
+    path: manifests
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hugo-blog

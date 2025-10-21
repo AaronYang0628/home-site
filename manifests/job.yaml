@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hugo-build
+spec:
+  template:
+    spec:
+      ttlSecondsAfterFinished: 3600
+      restartPolicy: Never
+      containers:
+        - name: hugo
+          image: klakegg/hugo:ext-alpine
+          command:
+            - /bin/sh
+            - -c
+            - |
+              rm -rf /output/*
+              hugo --destination /output
+          volumeMounts:
+            - name: output
+              mountPath: /output
+      volumes:
+        - name: output
+          persistentVolumeClaim:
+            claimName: hugo-blog-pvc
