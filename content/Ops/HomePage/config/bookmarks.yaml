@@ -38,3 +38,6 @@
         - abbr: BB
           icon: bilibili
           href: https://bilibili.com/
+    - RedBook:
+        - abbr: XHS
+          href: https://www.xiaohongshu.com/explore

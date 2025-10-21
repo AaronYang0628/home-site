@@ -12,11 +12,11 @@ title = '72602 Port'
     [relearn.dependencies.mapbox]
       name = 'mapbox'
 [params]
+  mermaidInitialize = '{ "securityLevel": "loose", "gitGraph": { "mainBranchName": "timeline" } }'
   disableLandingPageButton = true
   externalLinkTarget = '_blank'
   linkTitle = '72602'
   showVisitedLinks = true
-  mermaidZoom = false
   menuPre = '<i class="fab fa-github"></i> '
   themeVariant = '72602'
   [params.openapi]
