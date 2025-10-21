@@ -3,3 +3,4 @@ public/404.html
 public/index.html
 public/categories/index.html
 public/tags/index.html
+content/Ops/HomePage/config/logs/*
