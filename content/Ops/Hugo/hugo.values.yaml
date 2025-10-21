@@ -2,7 +2,6 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: hugo-blog
-  namespace: application
 spec:
   project: default
   source:
@@ -18,4 +17,4 @@ spec:
       - ApplyOutOfSyncOnly=true
   destination:
     server: https://kubernetes.default.svc
-    namespace: hugo-blog
+    namespace: application
