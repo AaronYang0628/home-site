@@ -9,6 +9,7 @@
           href: https://github.com/AaronYang0628
     - Aliyun:
         - abbr: Ali
+          icon: icloud
           href: https://home.console.aliyun.com/home/dashboard/ProductAndService
     - FontAwesome:
         - abbr: FA
@@ -16,6 +17,7 @@
           href: https://fontawesome.com/v6/search?o=r
     - Skywork:
         - abbr: SKY
+          icon: slidev
           href: https://skywork.ai/
     - ICON:
         - abbr: IC
