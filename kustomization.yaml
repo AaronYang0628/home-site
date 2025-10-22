@@ -1,2 +1,6 @@
 resources:
-  - manifests/
+  - manifests/pvc.yaml
+  - manifests/job.yaml
+  - manifests/deployment.yaml
+  - manifests/svc.yaml
+  - manifests/ingress.yaml
