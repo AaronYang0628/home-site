@@ -25,6 +25,8 @@ spec:
           volumeMounts:
             - name: src
               mountPath: /src
+            - name: output
+              mountPath: /output
             - name: ssh-key
               mountPath: "/root/.ssh-secret"
               readOnly: true
@@ -35,8 +37,6 @@ spec:
             - /bin/sh
             - -c
             - |
-              ls -al /src
-              ls -al /src/themes/hugo-theme-relearn
               rm -rf /output/*
               hugo --source /src --destination /output
           volumeMounts:
