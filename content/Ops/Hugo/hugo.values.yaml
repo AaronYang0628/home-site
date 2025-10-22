@@ -7,7 +7,7 @@ spec:
   source:
     repoURL: 'https://github.com/AaronYang0628/home-site.git'
     targetRevision: main
-    path: manifests
+    path: .
   syncPolicy:
     automated:
       prune: true
