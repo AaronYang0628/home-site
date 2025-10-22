@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: nginx:alpine
+          image: m.daocloud.io/docker.io/library/nginx:alpine
           ports:
             - containerPort: 80
           volumeMounts:

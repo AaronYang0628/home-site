@@ -9,7 +9,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: hugo
-          image: klakegg/hugo:ext-alpine
+          image: m.daocloud.io/docker.io/hugomods/hugo:exts-non-root-0.152.0
           command:
             - /bin/sh
             - -c
