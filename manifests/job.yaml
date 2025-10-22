@@ -19,6 +19,7 @@ spec:
               cp /root/.ssh-secret/known_hosts ~/.ssh/known_hosts
               chmod 600 ~/.ssh/id_rsa
               git clone --depth 1 git@github.com:AaronYang0628/home-site.git /src
+              chown -R 1000:1000 /src
           volumeMounts:
             - name: src
               mountPath: /src
@@ -33,7 +34,6 @@ spec:
             - -c
             - |
               ls -al /src
-              chown -R 1000:1000 /src
               rm -rf /output/*
               hugo --source /src --destination /output
           volumeMounts:
