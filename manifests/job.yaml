@@ -14,10 +14,17 @@ spec:
             - /bin/sh
             - -c
             - |
+              mkdir -p ~/.ssh
+              cp /root/.ssh-secret/id_rsa ~/.ssh/id_rsa
+              cp /root/.ssh-secret/known_hosts ~/.ssh/known_hosts
+              chmod 600 ~/.ssh/id_rsa
               git clone --depth 1 git@github.com:AaronYang0628/home-site.git /src
           volumeMounts:
             - name: src
               mountPath: /src
+            - name: ssh-key
+              mountPath: "/root/.ssh-secret"
+              readOnly: true
       containers:
         - name: hugo
           image: m.daocloud.io/docker.io/hugomods/hugo:exts-non-root-0.152.0
@@ -39,3 +46,13 @@ spec:
             claimName: hugo-blog-pvc
         - name: src
           emptyDir: {}
+              - name: ssh-key
+        - secret:
+          secretName: github-ssh-key
+          defaultMode: 0600
+          items:
+          - key: id_rsa
+            path: id_rsa
+          - key: known_hosts
+            path: known_hosts
+      
