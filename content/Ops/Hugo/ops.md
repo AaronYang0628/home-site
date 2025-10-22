@@ -2,6 +2,13 @@
 title = "Hugo Ops"
 +++
 
+
+```shell
+kubectl get secret github-ssh-key -o json \
+    | jq 'del(.metadata["namespace","creationTimestamp","resourceVersion","selfLink","uid"])' \
+    | kubectl -n application apply -f -
+```
+
 ```shell
 kubectl -n argocd apply -f /root/home-site/content/Ops/Hugo/hugo.values.yaml
 ```

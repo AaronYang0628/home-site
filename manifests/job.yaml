@@ -46,13 +46,13 @@ spec:
             claimName: hugo-blog-pvc
         - name: src
           emptyDir: {}
-              - name: ssh-key
-        - secret:
-          secretName: github-ssh-key
-          defaultMode: 0600
-          items:
-          - key: id_rsa
-            path: id_rsa
-          - key: known_hosts
-            path: known_hosts
+        - name: ssh-key
+          secret:
+            secretName: github-ssh-key
+            defaultMode: 0600
+            items:
+            - key: id_rsa
+              path: id_rsa
+            - key: known_hosts
+              path: known_hosts
       
