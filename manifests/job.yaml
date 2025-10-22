@@ -7,6 +7,17 @@ spec:
     spec:
       ttlSecondsAfterFinished: 3600
       restartPolicy: Never
+      initContainers:
+        - name: clone-repo
+          image: m.daocloud.io/docker.io/library/alpine/git:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              git clone --depth 1 https://github.com/AaronYang0628/home-site.git /src
+          volumeMounts:
+            - name: src
+              mountPath: /src
       containers:
         - name: hugo
           image: m.daocloud.io/docker.io/hugomods/hugo:exts-non-root-0.152.0
@@ -14,13 +25,17 @@ spec:
             - /bin/sh
             - -c
             - |
-              ls -al
+              ls -al /src
               rm -rf /output/*
               hugo --source /src --destination /output
           volumeMounts:
             - name: output
               mountPath: /output
+            - name: src
+              mountPath: /src
       volumes:
         - name: output
           persistentVolumeClaim:
             claimName: hugo-blog-pvc
+        - name: src
+          emptyDir: {}
