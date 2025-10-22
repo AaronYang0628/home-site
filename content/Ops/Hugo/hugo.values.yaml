@@ -5,7 +5,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/AaronYang0628/home-site.git'
+    repoURL: 'git@github.com:AaronYang0628/home-site.git'
     targetRevision: main
     path: .
   syncPolicy:
