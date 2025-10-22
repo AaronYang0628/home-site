@@ -33,6 +33,7 @@ spec:
             - -c
             - |
               ls -al /src
+              chown -R 1000:1000 /src
               rm -rf /output/*
               hugo --source /src --destination /output
           volumeMounts:
@@ -40,6 +41,10 @@ spec:
               mountPath: /output
             - name: src
               mountPath: /src
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
       volumes:
         - name: output
           persistentVolumeClaim:
