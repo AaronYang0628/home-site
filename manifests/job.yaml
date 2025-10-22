@@ -9,7 +9,7 @@ spec:
       restartPolicy: Never
       initContainers:
         - name: clone-repo
-          image: m.daocloud.io/docker.io/library/alpine/git:latest
+          image: m.daocloud.io/docker.io/alpine/git:latest
           command:
             - /bin/sh
             - -c
