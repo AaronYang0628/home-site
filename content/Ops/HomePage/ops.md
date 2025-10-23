@@ -10,6 +10,9 @@ hidden = true
 Tips:
 1. need `metrics-server`
 
+
+{{< tabs groupid="a" >}}
+{{% tab title="docker" %}}
 ```shell
 docker run -d \
   --name homepage \
@@ -23,4 +26,22 @@ docker run -d \
   -v /var/run/docker.sock:/var/run/docker.sock:ro \
   --restart unless-stopped \
   ghcr.io/gethomepage/homepage:v1.5.0
+```
+{{% /tab %}}
+{{% tab title="k8s manifests" %}}
+```shell
+kubectl get namespace monitor > /dev/null 2>&1 || kubectl create namespace monitor
+```
+
+```shell
+kubectl apply -f /root/home-site/content/Ops/HomePage/manifests
+```
+{{% /tab %}}
+
+{{< /tabs >}}
+
+
+
+```shell
+ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip) -L '*:30000:0.0.0.0:30000' -N -f
 ```

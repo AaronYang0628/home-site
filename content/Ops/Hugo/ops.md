@@ -2,6 +2,7 @@
 title = "Hugo Ops"
 +++
 
+1. 
 
 ```shell
 kubectl get secret github-ssh-key -o json \
