@@ -1,2 +1,7 @@
----
-# sample kubernetes config
+# kubernetes.yaml
+kubernetes:
+  - name: "Production Cluster"
+    configFile: "/app/.kube/config"
+    # 可选配置
+    # namespaces: ["default", "kube-system"]
+    # skipTLSVerify: false

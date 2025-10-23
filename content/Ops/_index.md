@@ -2,7 +2,10 @@
 title = "Ops"
 +++
 
-Ops Section
+1. check top 10 RAM comusing thread
+```shell
+ps aux --sort=-%mem | head -n 11
+```
 
 ```shell
 ssh-keygen -t rsa -b 4096 -C "github-deploy-key" -f id_rsa_github -N ""
