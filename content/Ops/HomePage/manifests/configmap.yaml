@@ -34,10 +34,26 @@ data:
             - abbr: IC
               icon: dashboard-icons-dark
               href: https://dashboardicons.com/
+        - DEV-BLOG:
+            - abbr: cnconti
+              icon: blogger
+              href: https://aaronyang0628.github.io/docs/
+        - WZ-BLOG:
+            - abbr: cnconti
+              icon: blogger
+              href: https://blog.geekcity.tech/articles/
+        - BK-BLOG:
+            - abbr: cnconti
+              icon: blogger
+              href: https://memo.cnconti.tech/#/
     - Social:
         - Reddit:
-            - abbr: RE
-              href: https://reddit.com/
+            - abbr: X
+              icon: x
+              href: https://x.com/
+        - RedBook:
+            - abbr: XHS
+              href: https://www.xiaohongshu.com/explore
     - Entertainment:
         - YouTube:
             - abbr: YT
@@ -47,32 +63,32 @@ data:
             - abbr: BB
               icon: bilibili
               href: https://bilibili.com/
-        - RedBook:
-            - abbr: XHS
-              href: https://www.xiaohongshu.com/explore
+        - IYF:
+            - abbr: IYF
+              icon: nowshowing
+              href: https://www.iyf.tv/?from=1
   services.yaml: |
-    - Basic Components:
+    - Local Service:
         - Proxy[Bridge]:
             icon: haproxy
             href: http://47.110.67.161:32080/main/index
-            description: GoProxy Bridge Service
-            ping: 47.110.67.161:32080
+            description: GoProxy Bridge At ECS
+            ping: 47.110.67.161
         - Proxy[Client]:
             icon: haproxy
             href: http://47.110.67.161:30080/main/index
-            description: GoProxy Client Service
-            ping: 47.110.67.161:30080
+            description: GoProxy Client At 72602 Home
+            ping: 47.110.67.161
     - Kubernetes:
         - Port Ingress:
             href: http://port.72602.online
-            description: Homepage is the best
+            description: http://port.72602.online
         - Argo CD:
-            href: http://argo-cd.72602.online
-            description: Homepage is the best
-    - Conatiner:
-        - My Third Service:
-            href: http://localhost/
-            description: Homepage is
+            icon: argo-cd
+            href: https://argo-cd.72602.online
+            description: ArgoCD Service At 72602 Home
+            ping: 47.110.67.161
+    - Conatiner: []
   widgets.yaml: |
     - kubernetes:
         cluster:
@@ -96,9 +112,9 @@ data:
         provider: google
         target: _blank
     - logo:
-        href: https://home.72602.online
+        href: http://home.72602.online
         target: _blank 
-        icon: /icons/st_icon_alpha.png
+        icon: http://port.72602.online/icons/st_icon_alpha.png
   docker.yaml: ""
   custom.css: ""
   custom.js: ""
