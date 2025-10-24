@@ -83,11 +83,16 @@ data:
         - Port Ingress:
             href: http://port.72602.online
             description: http://port.72602.online
-        - Argo CD:
-            icon: argo-cd
-            href: https://argo-cd.72602.online
-            description: ArgoCD Service At 72602 Home
-            ping: 47.110.67.161
+    - Web Mointor:
+        - GitLab:
+            type: gitlab
+            url: https://gitlab.com/
+            key: glpat-NYgW8x11nOqg9PMIDZ29Bm86MQp1OjVlazVmCw.01.121y99c1z
+            user_id: 9077379
+        - ArgoCD:
+            type: argocd
+            url: http://argo-cd.72602.online
+            key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJyZWFkb25seTphcGlLZXkiLCJuYmYiOjE3NjEyODgxNjgsImlhdCI6MTc2MTI4ODE2OCwianRpIjoiZDZlYzgzOTQtOTViNi00OGY2LThlMjctYTQyN2VkNWJlMGMxIn0.lCs-CKt_amDAhZH8CXHVdygkBQRxK4-OFcqRhB1l--8
     - Conatiner: []
   widgets.yaml: |
     - kubernetes:

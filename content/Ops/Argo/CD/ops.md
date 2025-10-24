@@ -3,11 +3,13 @@ title = "ArgoCD Ops"
 hidden = true
 +++
 
+1. login from ECS
 ```shell
 ARGOCD_PASS=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
 argocd login --insecure --username admin argo-cd.72602.online --password $ARGOCD_PASS
 ```
 
+2. upgrade argocd helm chart
 ```shell
 helm upgrade --install argo-cd argo-cd \
   --namespace argocd \
@@ -18,6 +20,7 @@ helm upgrade --install argo-cd argo-cd \
   --atomic
 ```
 
+3. install basic-components `ingress-nginx`
 ```shell
 kubectl -n argocd apply -f - <<EOF
 apiVersion: argoproj.io/v1alpha1
@@ -69,12 +72,12 @@ spec:
 EOF
 ```
 
+4. install basic-components `cert-manager`
 ```shell
-ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip) -L '*:30443:0.0.0.0:30443' -N -f
-ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip) -L '*:31080:0.0.0.0:31080' -N -f
-ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip) -L '*:32443:0.0.0.0:32443' -N -f
 ```
 
+5. forward some ports through ssh tunnel
 ```shell
-nohup hugo serve -p 80 --bind 0.0.0.0 > output.log 2>&1 &
+ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip) -L '*:31080:0.0.0.0:31080' -N -f
+ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip) -L '*:32443:0.0.0.0:32443' -N -f
 ```

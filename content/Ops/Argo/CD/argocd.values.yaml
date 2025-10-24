@@ -1,6 +1,11 @@
 crds:
   install: true
   keep: false
+configs:
+  cm:
+    accounts.readonly: apiKey
+  rbac:
+    policy.csv: "g, readonly, role:readonly"
 global:
   domain: argo-cd.72602.online
   revisionHistoryLimit: 3
