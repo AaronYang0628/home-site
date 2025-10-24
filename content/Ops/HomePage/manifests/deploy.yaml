@@ -27,7 +27,9 @@ spec:
           image: ghcr.io/gethomepage/homepage:v1.5.0
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
-              value: 47.110.67.161:3000,home.72602.online,localhost:30000
+              value: home.72602.online
+            - name: HOMEPAGE_DOCKER__URL
+              value: unix:///var/run/podman/podman.sock
           ports:
             - name: http
               containerPort: 3000
@@ -62,6 +64,8 @@ spec:
               readOnly: true
             - mountPath: /app/config/logs
               name: logs
+            - name: podman-socket
+              mountPath: /var/run/podman
       volumes:
         - name: homepage-config
           configMap:
@@ -69,6 +73,10 @@ spec:
         - name: icons-dirs
           hostPath:
             path: /root/home-site/static/icons
+            type: DirectoryOrCreate
+        - name: podman-socket
+          hostPath:
+            path: /var/run/podman
             type: DirectoryOrCreate
         - name: logs
           emptyDir: {}

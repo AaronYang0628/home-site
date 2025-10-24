@@ -7,20 +7,30 @@ metadata:
     app.kubernetes.io/name: homepage
 data:
   kubernetes.yaml: |
-    mode: cluster
+    mode: disabled
   settings.yaml: |
     title: 72602 Homepage
     description: A Monitoring Dashboard for All Services in 72602
     startUrl: /
+    discovery:
+      enabled: false
+    hideVersion: true
+    disableUpdateCheck: true
+    quicklaunch:
+      searchDescriptions: true
+      hideInternetSearch: true
+      showSearchSuggestions: true
+      hideVisitURL: true
+      provider: google
   bookmarks.yaml: |
     - Developer:
         - Github:
             - abbr: GH
-              icon: github
+              icon: github-light
               href: https://github.com/AaronYang0628
         - Aliyun:
             - abbr: Ali
-              icon: icloud
+              icon: aliyun
               href: https://home.console.aliyun.com/home/dashboard/ProductAndService
         - FontAwesome:
             - abbr: FA
@@ -68,45 +78,40 @@ data:
               icon: nowshowing
               href: https://www.iyf.tv/?from=1
   services.yaml: |
-    - Local Service:
-        - Proxy[Bridge]:
+    - Proxy Service:
+        - Proxy[Bridge + Service] At ECS:
             icon: haproxy
             href: http://47.110.67.161:32080/main/index
             description: GoProxy Bridge At ECS
-            ping: 47.110.67.161
-        - Proxy[Client]:
+            siteMonitor: http://47.110.67.161:32080
+        - Proxy[Client] At 72602:
             icon: haproxy
             href: http://47.110.67.161:30080/main/index
-            description: GoProxy Client At 72602 Home
-            ping: 47.110.67.161
-    - Kubernetes:
-        - Port Ingress:
+            description: GoProxy Client At 72602 Home [TODO]
+    - K8S At 72602:
+        - Port HTTP Ingress:
             href: http://port.72602.online
             description: http://port.72602.online
-    - Web Mointor:
-        - GitLab:
-            type: gitlab
-            url: https://gitlab.com/
-            key: glpat-NYgW8x11nOqg9PMIDZ29Bm86MQp1OjVlazVmCw.01.121y99c1z
-            user_id: 9077379
-        - ArgoCD:
-            type: argocd
-            url: http://argo-cd.72602.online
-            key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJyZWFkb25seTphcGlLZXkiLCJuYmYiOjE3NjEyODgxNjgsImlhdCI6MTc2MTI4ODE2OCwianRpIjoiZDZlYzgzOTQtOTViNi00OGY2LThlMjctYTQyN2VkNWJlMGMxIn0.lCs-CKt_amDAhZH8CXHVdygkBQRxK4-OFcqRhB1l--8
-    - Conatiner: []
+            ping: 47.110.67.161
+        - ArgoCD At 72602:
+            icon: argo-cd
+            description: ArgoCD Monitor
+            href: https://argo-cd.72602.online
+            widget:
+              type: argocd
+              url: https://argo-cd-argocd-server.argocd.svc.cluster.local
+              key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJyZWFkb25seTphcGlLZXkiLCJuYmYiOjE3NjEyODgxNjgsImlhdCI6MTc2MTI4ODE2OCwianRpIjoiZDZlYzgzOTQtOTViNi00OGY2LThlMjctYTQyN2VkNWJlMGMxIn0.lCs-CKt_amDAhZH8CXHVdygkBQRxK4-OFcqRhB1l--8
+              insecure: true
+    - Conatiners: 
+        - Podman Containers:
+            icon: podman
+            description: Podman At 72602
+            widget:
+              type: docker
+              url: tcp://192.168.49.1:2375
+              containers: 
+                - minikube
   widgets.yaml: |
-    - kubernetes:
-        cluster:
-          show: true
-          cpu: true
-          memory: true
-          showLabel: true
-          label: minikube
-        nodes:
-          show: false
-          cpu: true
-          memory: true
-          showLabel: true
     - resources:
         backend: resources
         expanded: true
@@ -120,6 +125,10 @@ data:
         href: http://home.72602.online
         target: _blank 
         icon: http://port.72602.online/icons/st_icon_alpha.png
-  docker.yaml: ""
+  docker.yaml: |
+    - name: "Host Podman"
+      description: "宿主机 Podman 容器"
+      url: "tcp://192.168.49.1:2375"
+      refresh: 60
   custom.css: ""
   custom.js: ""
