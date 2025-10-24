@@ -3,7 +3,10 @@ title = "ArgoCD Ops"
 hidden = true
 +++
 
-
+```shell
+ARGOCD_PASS=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+argocd login --insecure --username admin argo-cd.72602.online --password $ARGOCD_PASS
+```
 
 ```shell
 helm upgrade --install argo-cd argo-cd \
