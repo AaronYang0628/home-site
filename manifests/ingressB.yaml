@@ -1,13 +1,13 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: hugo-blog
+  name: hugo-blog-redirect
   annotations:
     kubernetes.io/ingress.class: nginx
 spec:
   ingressClassName: nginx
   rules:
-    - host: port.72602.online
+    - host: 72602.online
       http:
         paths:
           - path: /
