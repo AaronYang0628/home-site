@@ -28,8 +28,10 @@ spec:
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
               value: home.72602.online
-            - name: HOMEPAGE_DOCKER__URL
-              value: unix:///var/run/podman/podman.sock
+            - name: HOMEPAGE_DOCKER_DISABLE_DEFAULT
+              value: "true"
+            - name: HOMEPAGE_DOCKER_URL
+              value: tcp://192.168.49.1:2375
           ports:
             - name: http
               containerPort: 3000
@@ -64,8 +66,6 @@ spec:
               readOnly: true
             - mountPath: /app/config/logs
               name: logs
-            - name: podman-socket
-              mountPath: /var/run/podman
       volumes:
         - name: homepage-config
           configMap:
@@ -73,10 +73,6 @@ spec:
         - name: icons-dirs
           hostPath:
             path: /root/home-site/static/icons
-            type: DirectoryOrCreate
-        - name: podman-socket
-          hostPath:
-            path: /var/run/podman
             type: DirectoryOrCreate
         - name: logs
           emptyDir: {}
