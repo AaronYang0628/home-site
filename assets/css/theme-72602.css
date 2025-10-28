@@ -52,3 +52,23 @@
 
   --BOX-GREY-color: rgba(210, 210, 210, 1); /* background color of grey boxes */
 }
+
+.mermaid {
+  height: 500px !important;             
+  overflow: hidden;         
+  display: flex;
+  justify-content: flex-end;  /* 将图靠右对齐（焦点偏右） */
+  align-items: center;        /* 垂直居中 */
+}
+
+.mermaid > svg {
+  width: auto !important;
+  height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+
+  transform: scale(1.6);           /* 放大比例，按需调整 */
+  transform-origin: right center;  /* 缩放焦点在右中 */
+  transform-box: fill-box;         /* 让 transform-origin 在 SVG 内容上生效 */
+  display: block;
+}

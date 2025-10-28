@@ -12,7 +12,7 @@ title = '72602 Port'
     [relearn.dependencies.mapbox]
       name = 'mapbox'
 [params]
-  mermaidInitialize = '{ "securityLevel": "loose", "gitGraph": { "mainBranchName": "timeline" } }'
+  mermaidInitialize = '{ "securityLevel": "loose", "gitGraph": { "mainBranchName": "timeline", "theme": "neutral" } }'
   disableLandingPageButton = true
   externalLinkTarget = '_blank'
   linkTitle = '72602'
