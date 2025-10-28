@@ -54,7 +54,7 @@
 }
 
 .mermaid {
-  height: 500px !important;             
+  height: 600px !important;             
   overflow: hidden;         
   display: flex;
   justify-content: flex-end;  /* 将图靠右对齐（焦点偏右） */
@@ -67,8 +67,12 @@
   max-width: none !important;
   max-height: none !important;
 
-  transform: scale(1.6);           /* 放大比例，按需调整 */
+  transform: scale(1.8);           /* 放大比例，按需调整 */
   transform-origin: right center;  /* 缩放焦点在右中 */
   transform-box: fill-box;         /* 让 transform-origin 在 SVG 内容上生效 */
   display: block;
+}
+
+.gitgraph-branch-label {
+  transform: translateX(100%);
 }
