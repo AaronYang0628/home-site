@@ -18,12 +18,6 @@ spec:
       labels:
         app.kubernetes.io/name: homepage
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: ay-k3s01
-      tolerations:
-      - key: "node-role.kubernetes.io/control-plane"
-        operator: "Exists"
-        effect: "NoSchedule"
       serviceAccountName: homepage
       automountServiceAccountToken: true
       dnsPolicy: ClusterFirst
@@ -67,18 +61,12 @@ spec:
             - mountPath: /app/config/widgets.yaml
               name: homepage-config
               subPath: widgets.yaml
-            - mountPath: /app/public/icons
-              name: icons-dirs
-              readOnly: true
             - mountPath: /app/config/logs
               name: logs
       volumes:
         - name: homepage-config
           configMap:
             name: homepage
-        - name: icons-dirs
-          hostPath:
-            path: /root/home-site/static/icons
-            type: DirectoryOrCreate
         - name: logs
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: homepage-logs-pvc

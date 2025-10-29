@@ -38,7 +38,7 @@ data:
     - Blog:
         - DEV-BLOG:
             - abbr: ay's dev blog
-              icon: /icons/dev_blog.png
+              icon: https://raw.githubusercontent.com/AaronYang0628/home-site/refs/heads/main/static/icons/dev_blog.png
               href: https://aaronyang0628.github.io/docs/
         - WZ-BLOG:
             - abbr: wangzhi
@@ -59,7 +59,7 @@ data:
               href: https://home.console.aliyun.com/home/dashboard/ProductAndService
         - OperatorHub:
             - abbr: OSH
-              icon: /icons/operator_hub.png
+              icon: https://raw.githubusercontent.com/AaronYang0628/home-site/refs/heads/main/static/icons/operator_hub.png
               href: https://operatorhub.io/
         - Artifacthub:
             - abbr: AH
@@ -72,7 +72,7 @@ data:
               href: https://chatgpt.com/
         - Doubao:
             - abbr: DB
-              icon: /icons/doubao.png
+              icon: https://raw.githubusercontent.com/AaronYang0628/home-site/refs/heads/main/static/icons/doubao.png
               href: https://www.doubao.com/chat/
         - Deepseek:
             - abbr: DB
@@ -80,7 +80,7 @@ data:
               href: https://chat.deepseek.com/
         - Emojipedia:
             - abbr: emoji
-              icon: /icons/dev_blog.png
+              icon: https://raw.githubusercontent.com/AaronYang0628/home-site/refs/heads/main/static/icons/dev_blog.png
               href: https://emojipedia.org/
         - Gemini:
             - abbr: GM
