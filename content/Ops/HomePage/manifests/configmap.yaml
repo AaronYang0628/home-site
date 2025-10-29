@@ -133,23 +133,24 @@ data:
             description: GoProxy Client At 72602 Home
         - SSH At 72602:
             icon: terminal
-            url: tcp://47.110.67.161:10022
+            ping: 47.110.67.161
             description: SSH Service At 72602 Home
     - K8S At 72602:
         - Port HTTP Ingress:
             href: http://port.72602.online
             icon: nginx
             description: http://port.72602.online
-            ping: 47.110.67.161
+            siteMonitor: http://port.72602.online
         - RAG DEMO Ingress:
             href: http://rag.demo.72602.online
             icon: nginx
             description: http://rag.demo.72602.online
-            ping: 47.110.67.161
+            siteMonitor: http://rag.demo.72602.online
         - ArgoCD At 72602:
             icon: argo-cd
             description: ArgoCD Monitor
             href: https://argo-cd.72602.online
+            siteMonitor: https://argo-cd.72602.online
             widget:
               type: argocd
               url: https://argo-cd.72602.online
