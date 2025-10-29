@@ -18,6 +18,12 @@ spec:
       labels:
         app.kubernetes.io/name: homepage
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: ay-k3s01
+      tolerations:
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: "NoSchedule"
       serviceAccountName: homepage
       automountServiceAccountToken: true
       dnsPolicy: ClusterFirst
@@ -27,7 +33,7 @@ spec:
           image: ghcr.io/gethomepage/homepage:v1.5.0
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
-              value: home.72602.online
+              value: home.72602.online,localhost:30000
             - name: HOMEPAGE_DOCKER_DISABLE_DEFAULT
               value: "true"
             - name: HOMEPAGE_DOCKER_URL

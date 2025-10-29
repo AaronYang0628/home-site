@@ -22,9 +22,33 @@ data:
       showSearchSuggestions: true
       hideVisitURL: true
       provider: google
+    layout:
+      Developer:
+        style: row
+        columns: 5
+      Blog:
+        style: row
+        columns: 5
+      Media:
+        iconsOnly: true
+      Tool:
+        iconsOnly: true
   bookmarks.yaml: |
+    - Blog:
+        - DEV-BLOG:
+            - abbr: ay's dev blog
+              icon: /icons/st_icon_alpha.png
+              href: https://aaronyang0628.github.io/docs/
+        - WZ-BLOG:
+            - abbr: wangzhi
+              icon: blogger
+              href: https://blog.geekcity.tech/articles/
+        - BK-BLOG:
+            - abbr: cnconti
+              icon: blogger
+              href: https://memo.cnconti.tech/#/
     - Developer:
-        - Github:
+        - AY's Github:
             - abbr: GH
               icon: github-light
               href: https://github.com/AaronYang0628
@@ -32,39 +56,56 @@ data:
             - abbr: Ali
               icon: aliyun
               href: https://home.console.aliyun.com/home/dashboard/ProductAndService
+        - OperatorHub:
+            - abbr: OSH
+              icon: operatorhub
+              href: https://operatorhub.io/
+        - Artifacthub:
+            - abbr: AH
+              icon: artifacthub
+              href: https://artifacthub.io/
+    - Tool:
+        - ChatGPT:
+            - abbr: chatgpt
+              icon: chatgpt
+              href: https://chatgpt.com/
+        - Doubao:
+            - abbr: DB
+              icon: doubao
+              href: https://www.doubao.com/chat/
+        - Deepseek:
+            - abbr: DB
+              icon: deepseek
+              href: https://chat.deepseek.com/
+        - Emojipedia:
+            - abbr: emoji
+              icon: emojipedia
+              href: https://emojipedia.org/
+        - Gemini:
+            - abbr: GM
+              icon: google-gemini
+              href: https://gemini.google.com/
         - FontAwesome:
             - abbr: FA
               icon: fontawesome
               href: https://fontawesome.com/v6/search?o=r
         - Skywork:
             - abbr: SKY
-              icon: slidev
+              icon: google-slides
               href: https://skywork.ai/
         - ICON:
             - abbr: IC
               icon: dashboard-icons-dark
               href: https://dashboardicons.com/
-        - DEV-BLOG:
-            - abbr: cnconti
-              icon: blogger
-              href: https://aaronyang0628.github.io/docs/
-        - WZ-BLOG:
-            - abbr: cnconti
-              icon: blogger
-              href: https://blog.geekcity.tech/articles/
-        - BK-BLOG:
-            - abbr: cnconti
-              icon: blogger
-              href: https://memo.cnconti.tech/#/
-    - Social:
-        - Reddit:
-            - abbr: X
-              icon: x
+    - Media:
+        - Twitter:
+            - abbr: twitter
+              icon: twitter
               href: https://x.com/
         - RedBook:
             - abbr: XHS
+              icon: si-xiaohongshu
               href: https://www.xiaohongshu.com/explore
-    - Entertainment:
         - YouTube:
             - abbr: YT
               icon: youtube
@@ -77,21 +118,32 @@ data:
             - abbr: IYF
               icon: nowshowing
               href: https://www.iyf.tv/?from=1
+
   services.yaml: |
     - Proxy Service:
         - Proxy[Bridge + Service] At ECS:
-            icon: haproxy
+            icon: traefik-proxy
             href: http://47.110.67.161:32080/main/index
             description: GoProxy Bridge At ECS
             siteMonitor: http://47.110.67.161:32080
         - Proxy[Client] At 72602:
             icon: haproxy
             href: http://47.110.67.161:30080/main/index
-            description: GoProxy Client At 72602 Home [TODO]
+            description: GoProxy Client At 72602 Home
+        - SSH At 72602:
+            icon: terminal
+            url: tcp://47.110.67.161:10022
+            description: SSH Service At 72602 Home
     - K8S At 72602:
         - Port HTTP Ingress:
             href: http://port.72602.online
+            icon: nginx
             description: http://port.72602.online
+            ping: 47.110.67.161
+        - RAG DEMO Ingress:
+            href: http://rag.demo.72602.online
+            icon: nginx
+            description: http://rag.demo.72602.online
             ping: 47.110.67.161
         - ArgoCD At 72602:
             icon: argo-cd
@@ -99,7 +151,7 @@ data:
             href: https://argo-cd.72602.online
             widget:
               type: argocd
-              url: https://argo-cd-argocd-server.argocd.svc.cluster.local
+              url: https://argo-cd.72602.online
               key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJyZWFkb25seTphcGlLZXkiLCJuYmYiOjE3NjEyODgxNjgsImlhdCI6MTc2MTI4ODE2OCwianRpIjoiZDZlYzgzOTQtOTViNi00OGY2LThlMjctYTQyN2VkNWJlMGMxIn0.lCs-CKt_amDAhZH8CXHVdygkBQRxK4-OFcqRhB1l--8
               insecure: true
     - Conatiners: 
@@ -124,7 +176,7 @@ data:
     - logo:
         href: http://home.72602.online
         target: _blank 
-        icon: http://port.72602.online/icons/st_icon_alpha.png
+        icon: /icons/st_icon_alpha.png
   docker.yaml: |
     - name: "Host Podman"
       description: "宿主机 Podman 容器"
