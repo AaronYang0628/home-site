@@ -7,7 +7,7 @@ spec:
   source:
     repoURL: 'git@github.com:AaronYang0628/tutorial.git'
     targetRevision: main
-    path: milvus/python
+    path: milvus/python/manifests
   syncPolicy:
     automated:
       prune: true

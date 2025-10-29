@@ -1,5 +1,6 @@
 +++
 title = "Milvus RAG"
+description = "http://rag.demo.72602.online"
 +++
 
 [http://rag.demo.72602.online](http://rag.demo.72602.online)
