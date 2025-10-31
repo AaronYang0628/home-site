@@ -3,4 +3,5 @@ resources:
   - manifests/job.yaml
   - manifests/deployment.yaml
   - manifests/svc.yaml
-  - manifests/ingress.yaml
+  - manifests/ingress-port.yaml
+  - manifests/ingress-domain.yaml

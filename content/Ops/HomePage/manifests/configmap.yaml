@@ -2,7 +2,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: homepage
-  namespace: monitor
   labels:
     app.kubernetes.io/name: homepage
 data:
@@ -65,6 +64,10 @@ data:
             - abbr: AH
               icon: artifacthub
               href: https://artifacthub.io/
+        - ACR:
+            - abbr: ACR
+              icon: docker-engine
+              href: https://cr.console.aliyun.com/cn-hongkong/instance/dashboard
     - Tool:
         - ChatGPT:
             - abbr: chatgpt
@@ -86,6 +89,10 @@ data:
             - abbr: GM
               icon: google-gemini
               href: https://gemini.google.com/
+        - Claude Code:
+            - abbr: Claude
+              icon: claude-ai
+              href: https://claude.ai/new
         - FontAwesome:
             - abbr: FA
               icon: fontawesome
