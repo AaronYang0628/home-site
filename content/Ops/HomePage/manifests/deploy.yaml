@@ -16,6 +16,8 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: homepage
+      annotations:
+        configmap.reloader.stakater.com/reload: "homepage"
     spec:
       serviceAccountName: homepage
       automountServiceAccountToken: true
