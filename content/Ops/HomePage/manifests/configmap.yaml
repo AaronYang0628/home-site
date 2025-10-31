@@ -145,7 +145,7 @@ data:
     - K8S At 72602:
         - Port HTTP Ingress:
             href: http://port.72602.online
-            icon: nginx
+            icon: hugo
             description: http://port.72602.online
             siteMonitor: http://port.72602.online
         - RAG DEMO Ingress:

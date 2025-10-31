@@ -38,6 +38,16 @@ kubectl apply -f /root/home-site/content/Ops/HomePage/manifests
 ```
 {{% /tab %}}
 
+{{% tab title="argocd" %}}
+```shell
+kubectl get namespace monitor > /dev/null 2>&1 || kubectl create namespace monitor
+```
+
+```shell
+kubectl -n argocd apply -f content/Ops/HomePage/homepage.values.yaml
+```
+{{% /tab %}}
+
 {{< /tabs >}}
 
 
