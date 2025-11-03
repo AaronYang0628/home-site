@@ -20,9 +20,7 @@ helm upgrade --install argo-cd argo-cd \
   --atomic
 ```
 
-
-
-4. install basic-components `cert-manager`
+3. install basic-components `cert-manager`
 ```shell
 kubectl -n argocd apply -f - << EOF
 apiVersion: argoproj.io/v1alpha1
@@ -74,7 +72,7 @@ spec:
 EOF
 ```
 
-
+4. create  clusterIssuer
 ```shell
 kubectl -n kube-system apply -f - << EOF
 apiVersion: cert-manager.io/v1
@@ -94,7 +92,7 @@ spec:
 EOF
 ```
 
-3.  ingress class
+5. install basic-components ingress class
 ```shell
 kubectl -n argocd apply -f - <<EOF
 apiVersion: argoproj.io/v1alpha1
@@ -144,7 +142,13 @@ spec:
 EOF
 ```
 
-5. forward some ports through ssh tunnel
+6. retrieve readonly token
+```shell
+argocd account list
+argocd account generate-token --account readonly
+```
+
+7. [Optional]() forward some ports through ssh tunnel
 ```shell
 ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip) -L '*:31080:0.0.0.0:31080' -N -f
 ssh -i ~/.minikube/machines/minikube/id_rsa docker@$(minikube ip) -L '*:32443:0.0.0.0:32443' -N -f
