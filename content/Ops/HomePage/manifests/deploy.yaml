@@ -29,10 +29,6 @@ spec:
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
               value: home.72602.online,localhost:30000
-            - name: HOMEPAGE_DOCKER_DISABLE_DEFAULT
-              value: "true"
-            - name: HOMEPAGE_DOCKER_URL
-              value: tcp://192.168.49.1:2375
           ports:
             - name: http
               containerPort: 3000

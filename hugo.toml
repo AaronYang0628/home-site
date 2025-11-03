@@ -12,6 +12,7 @@ title = '72602 Port'
     [relearn.dependencies.mapbox]
       name = 'mapbox'
 [params]
+  customMermaidURL = 'https://unpkg.com/mermaid/dist/mermaid.min.js'
   mermaidInitialize = '{ "securityLevel": "loose", "gitGraph": { "mainBranchName": "timeline", "theme": "neutral" } }'
   disableLandingPageButton = true
   externalLinkTarget = '_blank'

@@ -45,8 +45,10 @@ server:
     ingressClassName: nginx
     annotations:
       nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-      cert-manager.io/cluster-issuer: self-signed-ca-issuer
+      cert-manager.io/cluster-issuer: letsencrypt
+      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
       nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+      acme.cert-manager.io/http01-edit-in-place: "true"
     hostname: argo-cd.72602.online
     path: /
     pathType: Prefix

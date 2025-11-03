@@ -161,17 +161,9 @@ data:
             widget:
               type: argocd
               url: https://argo-cd.72602.online
-              key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJyZWFkb25seTphcGlLZXkiLCJuYmYiOjE3NjEyODgxNjgsImlhdCI6MTc2MTI4ODE2OCwianRpIjoiZDZlYzgzOTQtOTViNi00OGY2LThlMjctYTQyN2VkNWJlMGMxIn0.lCs-CKt_amDAhZH8CXHVdygkBQRxK4-OFcqRhB1l--8
+              key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJyZWFkb25seTphcGlLZXkiLCJuYmYiOjE3NjIxNTk4ODMsImlhdCI6MTc2MjE1OTg4MywianRpIjoiNDljMmM2OTQtYTcwMy00Y2QwLWE0ZGEtOWQzMzI1YTRkNTg5In0.hIBqtzYb5SzkzommfZF8doq8Nm14c2_XMhH6IcTTPgw
               insecure: true
     - Conatiners: 
-        - Podman Containers:
-            icon: podman
-            description: Podman At 72602
-            widget:
-              type: docker
-              url: tcp://192.168.49.1:2375
-              containers: 
-                - minikube
   widgets.yaml: |
     - resources:
         backend: resources
