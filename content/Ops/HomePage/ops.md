@@ -44,7 +44,7 @@ kubectl get namespace monitor > /dev/null 2>&1 || kubectl create namespace monit
 ```
 
 ```shell
-kubectl -n argocd apply -f content/Ops/HomePage/homepage.values.yaml
+kubectl -n argocd apply -f /root/home-site/content/Ops/HomePage/homepage.values.yaml
 ```
 {{% /tab %}}
 
