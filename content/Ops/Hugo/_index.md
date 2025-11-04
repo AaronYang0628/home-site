@@ -10,7 +10,7 @@ title = "Hugo"
 
 ### Deployment
 {{< tabs  title="Depoly For" >}}
-{{< tab title="Production" >}}
+{{< tab title="Production" icon="fa-solid fa-rocket" >}}
 
 {{% notice style="transparent" %}}
 ```
@@ -34,7 +34,7 @@ argocd app sync argocd/hugo-blog
 {{% /notice %}}
 
 {{< /tab >}}
-{{< tab title="Development" >}}
+{{< tab title="Development" icon="fa-solid fa-flask-vial" >}}
 
   different ways to test homepage settings
   {{< tabs groupid="tabs-example-language" >}}

@@ -23,7 +23,7 @@ title = "HomePage"
 
 ### Deployment
 {{< tabs  title="Depoly For" >}}
-{{< tab title="Production" >}}
+{{< tab title="Production" icon="fa-solid fa-rocket" >}}
 
 {{% notice style="transparent" %}}
 ```
@@ -34,7 +34,7 @@ kubectl -n argocd apply -f /root/home-site/content/Ops/HomePage/homepage.values.
 {{% /notice %}}
 
 {{< /tab >}}
-{{< tab title="Development" >}}
+{{< tab title="Development" icon="fa-solid fa-flask-vial" >}}
 
   different ways to test homepage settings
   {{< tabs groupid="tabs-example-language" >}}

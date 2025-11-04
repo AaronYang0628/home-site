@@ -134,12 +134,12 @@ data:
     - Proxy Service:
         - Proxy[Bridge + Service] At ECS:
             icon: traefik-proxy
-            href: http://47.110.67.161:32080/main/index
+            href: http://server.proxy.72602.online
             description: GoProxy Bridge At ECS
-            siteMonitor: http://47.110.67.161:32080
+            siteMonitor: http://server.proxy.72602.online
         - Proxy[Client] At 72602:
             icon: haproxy
-            href: http://47.110.67.161:30080/main/index
+            href: http://client.proxy.72602.online
             description: GoProxy Client At 72602 Home
         - SSH At 72602:
             icon: terminal

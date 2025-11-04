@@ -36,7 +36,7 @@ If the installation fails or your vps is not a linux64-bit system, follow the ma
 
 Select the file that is appropriate for your system and download it, [click to download](https://github.com/snail007/proxy_admin_free/releases)
 
-{{< tabs title="install on" >}}
+{{< tabs groupid="install" title="install on" >}}
 {{% tab title="linux" %}}
 ```shell
 ./proxy-admin install
@@ -63,7 +63,7 @@ After the installation is successful, open the browser to access: `http://127.0.
 
 Configuration file path:
 
-{{< tabs title="configuration file saved at" >}}
+{{< tabs groupid="install" title="configuration file saved at" >}}
 {{% tab title="linux" %}}
 `/etc/gpa/app.toml`
 {{% /tab %}}
@@ -79,7 +79,7 @@ You can configure the listening port and logging.
 
 ## Remove Service
 
-{{< tabs title="Uninstall on" >}}
+{{< tabs groupid="install" title="Uninstall on" >}}
 {{% tab title="linux" %}}
 ```shell
 ./proxy-admin uninstall
@@ -101,7 +101,7 @@ proxy-admin.exe uninstall
 
 ## Service Management
 
-{{< tabs title="Manage Service on" >}}
+{{< tabs groupid="install" title="Manage Service on" >}}
 {{% tab title="linux" %}}
 ```shell
 proxy-admin start
@@ -149,7 +149,7 @@ proxy-admin restore    #restore data
 
 ## Upgrade Service
 
-{{< tabs title="Upgrade Service on" >}}
+{{< tabs groupid="install" title="Upgrade Service on" >}}
 {{% tab title="linux" %}}
 ```shell
 proxy-admin update

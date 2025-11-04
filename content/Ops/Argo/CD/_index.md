@@ -20,7 +20,7 @@ helm upgrade --install argo-cd argo-cd \
 
 ### Login Argocd
 {{< tabs groupid="Login From" title="Login From" >}}
-{{< tab title="🖥️ECS" >}}
+{{< tab title="ECS" icon="fa-solid fa-server" >}}
 
 {{% notice style="transparent" %}}
 ```
@@ -30,7 +30,7 @@ argocd login --insecure --username admin argo-cd.72602.online --password $ARGOCD
 {{% /notice %}}
 
 {{< /tab >}}
-{{< tab title="🏠72602" >}}
+{{< tab title="72602" icon="fa-solid fa-computer" >}}
 
 {{% notice style="transparent" %}}
 ```
@@ -49,7 +49,7 @@ Instead of using argocd, home still need to use ingress to expose services, and 
 
 {{< tabs title="Install" >}}
 
-{{< tab title="📝Cert-Manager" >}}
+{{< tab title="Cert-Manager" icon="fa-solid fa-certificate" >}}
 {{% notice style="transparent" %}}
 {{% include file="cert-manager/install.md" %}}
 {{% /notice %}}
@@ -59,13 +59,13 @@ And we need to create a Let's Encrypt Issuer
 {{% /notice %}}
 {{< /tab >}}
 
-{{< tab title="Ingress-Nginx" >}}
+{{< tab title="Ingress-Nginx" icon="fa-solid fa-diagram-project" >}}
 {{% notice style="transparent" %}}
 {{% include file="ingress-nginx/install.md" %}}
 {{% /notice %}}
 {{< /tab >}}
 
-{{< tab title="Reloader" >}}
+{{< tab title="Reloader" icon="fa-solid fa-retweet" >}}
 {{% notice style="transparent" %}}
 {{% include file="reloader/install.md" %}}
 {{% /notice %}}
