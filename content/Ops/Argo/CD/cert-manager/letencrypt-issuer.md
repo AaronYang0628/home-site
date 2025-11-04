@@ -1,5 +1,5 @@
 
-```yaml
+```
 kubectl -n kube-system apply -f - << EOF
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer

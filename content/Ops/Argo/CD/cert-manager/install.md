@@ -1,5 +1,5 @@
 
-```yaml
+```
 kubectl -n argocd apply -f - << EOF
 apiVersion: argoproj.io/v1alpha1
 kind: Application

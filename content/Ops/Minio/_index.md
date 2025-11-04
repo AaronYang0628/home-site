@@ -2,8 +2,20 @@
 title = "Minio"
 +++
 
+### Preliminary
+- Kubernetes has installed, if not check 🔗<a href="/ops/index.html" target="_blank">link</a> </p>
 
-```shell
+- ArgoCD has installed, if not check 🔗<a href="/ops/argo/cd/index.html" target="_blank">link</a> </p>
+
+- Ingres has installed on argoCD, if not check 🔗<a href="/ops/argo/cd/index.html#manage-basic-components" target="_blank">link</a> </p>
+    1. The K3s server needs port 6443 to be accessible by all nodes.
+    2. If you wish to utilize the metrics server, all nodes must be accessible to each other on port 10250.
+
+- Cert-manager has installed on argoCD and the clusterissuer has a named `letsencrypt`, if not check 🔗<a href="/ops/argo/cd/index.html#manage-basic-components" target="_blank">link</a> </p>
+
+
+### Deployment
+```
 kubectl -n argocd apply -f - << EOF
 apiVersion: argoproj.io/v1alpha1
 kind: Application
