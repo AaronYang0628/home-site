@@ -1,7 +1,7 @@
 
 +++
 title = "PorxyAdmin Ops"
-hidden = true
+draft = true
 +++
 
 ### Bridge +  Server

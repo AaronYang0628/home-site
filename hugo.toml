@@ -2,6 +2,7 @@ baseURL = 'https://72602.online'
 languageCode = 'en-us'
 theme = 'hugo-theme-relearn'
 title = '72602 Port'
+enableGitInfo = true
 [author]
   email = 'aaron19940628@gmail.com'
   name = 'Aaron Yang'

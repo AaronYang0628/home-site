@@ -1,5 +1,5 @@
 
 +++
-title = "NFS Ops"
-hidden = true
+title = "Ops"
+draft = true
 +++

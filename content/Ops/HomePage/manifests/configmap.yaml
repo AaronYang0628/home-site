@@ -105,6 +105,10 @@ data:
             - abbr: IC
               icon: dashboard-icons-dark
               href: https://dashboardicons.com/
+        - PayWallBuster:
+            - abbr: PWB
+              icon: google-chrome
+              href: https://paywallbuster.com/
     - Media:
         - Twitter:
             - abbr: twitter
@@ -126,7 +130,6 @@ data:
             - abbr: IYF
               icon: nowshowing
               href: https://www.iyf.tv/?from=1
-
   services.yaml: |
     - Proxy Service:
         - Proxy[Bridge + Service] At ECS:
@@ -142,22 +145,17 @@ data:
             icon: terminal
             ping: 47.110.67.161
             description: SSH Service At 72602 Home
-    - K8S At 72602:
-        - Port HTTP Ingress:
-            href: http://port.72602.online
-            icon: hugo
-            description: http://port.72602.online
-            siteMonitor: http://port.72602.online
-        - RAG DEMO Ingress:
-            href: http://rag.demo.72602.online
-            icon: nginx
-            description: http://rag.demo.72602.online
-            siteMonitor: http://rag.demo.72602.online
+    - Basic Components:
         - Minio Ingress:
             href: https://console.minio.72602.online
             icon: minio
             description: https://console.minio.72602.online
             siteMonitor: https://console.minio.72602.online
+        - Mariadb Ingress:
+            href: https://mariadb.72602.online
+            icon: mariadb
+            description: https://mariadb.72602.online
+            siteMonitor: https://mariadb.72602.online
         - ArgoCD At 72602:
             icon: argo-cd
             description: ArgoCD Monitor
@@ -168,6 +166,17 @@ data:
               url: https://argo-cd.72602.online
               key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJyZWFkb25seTphcGlLZXkiLCJuYmYiOjE3NjIxNTk4ODMsImlhdCI6MTc2MjE1OTg4MywianRpIjoiNDljMmM2OTQtYTcwMy00Y2QwLWE0ZGEtOWQzMzI1YTRkNTg5In0.hIBqtzYb5SzkzommfZF8doq8Nm14c2_XMhH6IcTTPgw
               insecure: true
+    - App Or DEMO:
+        - Port Blog Ingress:
+            href: http://port.72602.online
+            icon: hugo
+            description: http://port.72602.online
+            siteMonitor: http://port.72602.online
+        - RAG DEMO Ingress:
+            href: http://rag.demo.72602.online
+            icon: nginx
+            description: http://rag.demo.72602.online
+            siteMonitor: http://rag.demo.72602.online
     - Conatiners: []
   widgets.yaml: |
     - resources:
@@ -183,6 +192,6 @@ data:
         href: http://home.72602.online
         target: _blank 
         icon: https://raw.githubusercontent.com/AaronYang0628/home-site/refs/heads/main/static/icons/st_icon_alpha.png
-  docker.yaml: []
+  docker.yaml: ""
   custom.css: ""
   custom.js: ""

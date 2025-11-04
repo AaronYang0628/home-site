@@ -1,5 +1,6 @@
 +++
-title = "Hugo Ops"
+title = "Ops"
+draft = true
 +++
 
 1. 
