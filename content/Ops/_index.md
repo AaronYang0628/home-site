@@ -4,7 +4,7 @@ description = "72602 Cluster Ops"
 +++
 
 ### init k3s cluster
-```shell
+```
 curl -sfL https://rancher-mirror.rancher.cn/k3s/k3s-install.sh | \
   INSTALL_K3S_MIRROR=cn \
   sh -s - server \
@@ -14,18 +14,18 @@ curl -sfL https://rancher-mirror.rancher.cn/k3s/k3s-install.sh | \
 ```
 
 ### copy kubeconfig
-```shell
+```
 mkdir -p $HOME/.kube
 cp /etc/rancher/k3s/k3s.yaml $HOME/.kube/config
 ```
 
 ### retrieve token
-```shell
+```
 cat /var/lib/rancher/k3s/server/node-token
 ```
 
 ### uninstall cluster
-```shell
+```
 /usr/local/bin/k3s-uninstall.sh
 ```
 

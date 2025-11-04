@@ -3,6 +3,10 @@ kind: Job
 metadata:
   name: blog-content-build
   annotations:
+    # Run this Job as an ArgoCD Sync hook so it executes during an App sync
+    # (e.g. during `argocd app sync` triggered by CI). Keep HookSucceeded so
+    # the Job is removed after success.
+    argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
   template:
