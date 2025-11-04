@@ -141,6 +141,7 @@ data:
             icon: haproxy
             href: http://client.proxy.72602.online
             description: GoProxy Client At 72602 Home
+            siteMonitor: http://client.proxy.72602.online
         - SSH At 72602:
             icon: terminal
             ping: 47.110.67.161
