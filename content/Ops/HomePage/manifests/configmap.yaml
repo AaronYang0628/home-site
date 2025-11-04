@@ -153,6 +153,11 @@ data:
             icon: nginx
             description: http://rag.demo.72602.online
             siteMonitor: http://rag.demo.72602.online
+        - Minio Ingress:
+            href: https://console.minio.72602.online
+            icon: minio
+            description: https://console.minio.72602.online
+            siteMonitor: https://console.minio.72602.online
         - ArgoCD At 72602:
             icon: argo-cd
             description: ArgoCD Monitor
@@ -163,7 +168,7 @@ data:
               url: https://argo-cd.72602.online
               key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJyZWFkb25seTphcGlLZXkiLCJuYmYiOjE3NjIxNTk4ODMsImlhdCI6MTc2MjE1OTg4MywianRpIjoiNDljMmM2OTQtYTcwMy00Y2QwLWE0ZGEtOWQzMzI1YTRkNTg5In0.hIBqtzYb5SzkzommfZF8doq8Nm14c2_XMhH6IcTTPgw
               insecure: true
-    - Conatiners: 
+    - Conatiners: []
   widgets.yaml: |
     - resources:
         backend: resources
@@ -178,10 +183,6 @@ data:
         href: http://home.72602.online
         target: _blank 
         icon: https://raw.githubusercontent.com/AaronYang0628/home-site/refs/heads/main/static/icons/st_icon_alpha.png
-  docker.yaml: |
-    - name: "Host Podman"
-      description: "宿主机 Podman 容器"
-      url: "tcp://192.168.49.1:2375"
-      refresh: 60
+  docker.yaml: []
   custom.css: ""
   custom.js: ""
