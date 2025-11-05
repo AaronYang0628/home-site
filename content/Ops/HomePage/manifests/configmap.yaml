@@ -178,6 +178,11 @@ data:
             icon: nginx
             description: http://rag.demo.72602.online
             siteMonitor: http://rag.demo.72602.online
+        - Agent DEMO Ingress:
+            href: http://agent.demo.72602.online
+            icon: nginx
+            description: http://agent.demo.72602.online
+            siteMonitor: http://agent.demo.72602.online
     - Conatiners: []
   widgets.yaml: |
     - resources:
