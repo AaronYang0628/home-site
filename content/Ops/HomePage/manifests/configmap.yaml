@@ -157,6 +157,10 @@ data:
             icon: mariadb
             description: https://mariadb.72602.online
             siteMonitor: https://mariadb.72602.online
+        - N8N:
+            - abbr: N8N
+              icon: n8n
+              href: https://n8n.72602.online
         - ArgoCD At 72602:
             icon: argo-cd
             description: ArgoCD Monitor
