@@ -35,7 +35,6 @@ kind: Ingress
 metadata:
   name: proxy-server-ingress
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"

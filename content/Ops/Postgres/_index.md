@@ -1,5 +1,5 @@
 +++
-title = "Minio"
+title = "PostgreSQL"
 +++
 
 ### Preliminary

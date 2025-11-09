@@ -1,5 +1,5 @@
 +++
-title = "Minio"
+title = "N8N"
 +++
 
 ### Preliminary
