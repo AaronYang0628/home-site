@@ -1,0 +1,94 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: n8n
+spec:
+  project: default
+  source:
+    repoURL: https://community-charts.github.io/helm-charts
+    chart: n8n
+    targetRevision: 1.118.2
+    helm:
+      releaseName: n8n
+      values: |
+        log:
+          level: info
+
+        db:
+          type: postgresdb
+
+        externalPostgresql:
+          host: "postgresql-instance1.ab012cdefghi.eu-central-1.rds.amazonaws.com"
+          username: "n8nuser"
+          database: "n8n"
+          existingSecret: "my-k8s-secret-contains-postgres-password-key-and-credential"
+
+        main:
+          count: 1
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 512m
+              memory: 512Mi
+
+        worker:
+          mode: queue
+          autoscaling:
+            enabled: true
+            minReplicas: 1
+            maxReplicas: 2
+          waitMainNodeReady:
+            enabled: true
+          persistence:
+            enabled: true
+            accessMode: ReadWriteOnce
+            storageClass: "local-path"
+            size: 5Gi
+          resources:
+            requests:
+              cpu: 500m
+              memory: 250Mi
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
+
+        externalRedis:
+          host: "redis.72602.online"
+          username: "default"
+          existingSecret: "my-k8s-secret-contains-redis-password-key-and-credential"
+
+        ingress:
+          enabled: true
+          ingressClassName: nginx
+          hosts:
+            - host: n8n.72602.online
+              paths:
+                - path: /
+                  pathType: Prefix
+
+        webhook:
+          mode: queue
+          url: "https://webhook.72602.online"
+          autoscaling:
+            enabled: false
+          waitMainNodeReady:
+            enabled: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 512m
+              memory: 512Mi
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: n8n
