@@ -130,8 +130,16 @@ data:
             - abbr: IYF
               icon: nowshowing
               href: https://www.iyf.tv/?from=1
+        - WeChat:
+            - abbr: WeChat
+              icon: wechat
+              href: https://mp.weixin.qq.com/
+        - Medium:
+            - abbr: Medium
+              icon: medium-dark
+              href: https://medium.com/
   services.yaml: |
-    - Proxy Service:
+    - Basic Services:
         - Proxy[Bridge + Service] At ECS:
             icon: traefik-proxy
             href: http://server.proxy.72602.online
@@ -146,27 +154,24 @@ data:
             icon: terminal
             ping: 47.110.67.161
             description: SSH Service At 72602 Home
-    - Basic Components:
+        - Postgres Ingress:
+            icon: postgres
+            href: https://aws-1-ap-southeast-2.pooler.supabase.com
+            ping: aws-1-ap-southeast-2.pooler.supabase.com
+            description: Supabase Free Postgres Service
+    - Argocd APPs:
         - Minio Ingress:
             href: https://console.minio.72602.online
             icon: minio
             description: https://console.minio.72602.online
             siteMonitor: https://console.minio.72602.online
-        - Mariadb Ingress:
-            href: https://mariadb.72602.online
-            icon: mariadb
-            description: https://mariadb.72602.online
-            siteMonitor: https://mariadb.72602.online
-        - Postgres Ingress:
-            icon: postgres
-            href: https://postgres.72602.online
-            description: https://postgres.72602.online
-            siteMonitor: https://postgres.72602.online
         - Redis Ingress:
             icon: redis
             href: https://redis.72602.online
             description: https://redis.72602.online
-            siteMonitor: https://redis.72602.online
+            widget:
+              type: redis
+              url: tcp://redis.72602.online:30250
         - N8N Ingress:
             icon: n8n
             href: https://n8n.72602.online

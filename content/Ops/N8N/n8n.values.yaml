@@ -13,16 +13,14 @@ spec:
       values: |
         log:
           level: info
-
         db:
           type: postgresdb
-
         externalPostgresql:
-          host: "postgresql-instance1.ab012cdefghi.eu-central-1.rds.amazonaws.com"
-          username: "n8nuser"
-          database: "n8n"
-          existingSecret: "my-k8s-secret-contains-postgres-password-key-and-credential"
-
+          host: "aws-1-ap-southeast-2.pooler.supabase.com"
+          port: 5432
+          username: "postgres.kconxfeltufjzqtjznfb"
+          database: "postgres"
+          existingSecret: "n8n-middleware-credential"
         main:
           count: 1
           resources:
@@ -32,7 +30,6 @@ spec:
             limits:
               cpu: 512m
               memory: 512Mi
-
         worker:
           mode: queue
           autoscaling:
@@ -53,12 +50,10 @@ spec:
             limits:
               cpu: 1000m
               memory: 1024Mi
-
         externalRedis:
           host: "redis.72602.online"
           username: "default"
-          existingSecret: "my-k8s-secret-contains-redis-password-key-and-credential"
-
+          existingSecret: "n8n-middleware-credential"
         ingress:
           enabled: true
           ingressClassName: nginx
@@ -67,7 +62,6 @@ spec:
               paths:
                 - path: /
                   pathType: Prefix
-
         webhook:
           mode: queue
           url: "https://webhook.72602.online"
