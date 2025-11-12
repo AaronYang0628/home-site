@@ -1,123 +1,114 @@
 +++
 title = "Redis"
+tags = ["redis", "ecs"]
 +++
 
-### Preliminary
-- Kubernetes has installed, if not check 🔗<a href="/ops/index.html" target="_blank">link</a> </p>
-
-- ArgoCD has installed, if not check 🔗<a href="/ops/argo/cd/index.html" target="_blank">link</a> </p>
-
-- Ingres has installed on argoCD, if not check 🔗<a href="/ops/argo/cd/index.html#manage-basic-components" target="_blank">link</a> </p>
-    1. The K3s server needs port 6443 to be accessible by all nodes.
-    2. If you wish to utilize the metrics server, all nodes must be accessible to each other on port 10250.
-
+Due to Resource Limitations, Redis is not installed at home, I put it on the ECS server, and use the following script to start redis image
 
 ### Prepare `redis-credentials`
-```
-kubectl -n application create secret generic redis-credentials \
+```shell
+kubectl get namespaces database > /dev/null 2>&1 || kubectl create namespace database
+kubectl -n database create secret generic redis-credentials \
   --from-literal=redis-password=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16)
 ```
 
-### Deployment
+
+### Start Redis Server AT ECS
 ```
-kubectl -n argocd apply -f - << 'EOF'
-apiVersion: argoproj.io/v1alpha1
-kind: Application
+#!/bin/bash
+
+# 设置 Redis 密码（请修改为你自己的强密码）
+REDIS_PASSWORD="xxxxxx"
+
+# 创建数据目录
+mkdir -p $(pwd)/redis/data
+
+# 启动 Redis 容器（带资源限制）
+docker run -d \
+  --name redis \
+  -p 30679:6379 \
+  -v $(pwd)/redis/data:/data \
+  --restart always \
+  --memory="512m" \
+  --memory-swap="512m" \
+  --cpus="1.0" \
+  m.daocloud.io/docker.io/library/redis:8.4-rc1-bookworm \
+  redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes --maxmemory 450mb --maxmemory-policy allkeys-lru
+
+echo "Redis 容器已启动！"
+echo "容器名称: redis"
+echo "对外端口: 30679 (映射到容器内 6379)"
+echo "密码: ${REDIS_PASSWORD}"
+echo "数据目录: $(pwd)/redis/data"
+echo "内存限制: 512MB"
+echo "CPU 限制: 1.0 核"
+echo ""
+echo "连接配置:"
+echo "  主机: 你的服务器IP"
+echo "  端口: 30679"
+echo "  密码: ${REDIS_PASSWORD}"
+echo ""
+echo "本地测试连接命令:"
+echo "docker exec -it redis redis-cli -a ${REDIS_PASSWORD}"
+echo "或使用外部工具连接: redis-cli -h localhost -p 30679 -a ${REDIS_PASSWORD}"
+echo ""
+echo "查看资源使用:"
+echo "docker stats redis"
+```
+
+### But also use ingress to expose redis service
+```shell
+kubectl -n storage apply -f - <<EOF
+apiVersion: v1
+kind: Service
 metadata:
-  name: redis
+  name: redis-server-service
 spec:
-  syncPolicy:
-    syncOptions:
-    - CreateNamespace=true
-  project: default
-  source:
-    repoURL: https://charts.bitnami.com/bitnami
-    chart: redis
-    targetRevision: 18.16.0
-    helm:
-      releaseName: redis
-      values: |
-        architecture: replication
-        auth:
-          enabled: true
-          sentinel: false
-          existingSecret: redis-credentials
-        master:
-          count: 1
-          resources:
-            requests:
-              memory: 512Mi
-              cpu: 512m
-            limits:
-              memory: 1024Mi
-              cpu: 1024m
-          disableCommands:
-            - FLUSHDB
-            - FLUSHALL
-          persistence:
-            enabled: true
-            storageClass: "local-path"
-            accessModes:
-            - ReadWriteOnce
-            size: 8Gi
-        replica:
-          replicaCount: 1
-          resources:
-            requests:
-              memory: 512Mi
-              cpu: 512m
-            limits:
-              memory: 1024Mi
-              cpu: 1024m
-          disableCommands:
-            - FLUSHDB
-            - FLUSHALL
-          persistence:
-            enabled: true
-            storageClass: "local-path"
-            accessModes:
-            - ReadWriteOnce
-            size: 8Gi
-        image:
-          registry: m.daocloud.io/docker.io
-          pullPolicy: IfNotPresent
-        sentinel:
-          enabled: false
-        metrics:
-          enabled: false
-        volumePermissions:
-          enabled: false
-        sysctl:
-          enabled: false
-        extraDeploy:
-        - apiVersion: traefik.io/v1alpha1
-          kind: IngressRouteTCP
-          metadata:
-            name: redis-tcp
-            namespace: storage
-          spec:
-            entryPoints:
-              - redis
-            routes:
-            - match: HostSNI(`*`)
-              services:
-              - name: redis-master
-                port: 6379
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: storage
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 30679
+    protocol: TCP
+    name: http
 EOF
 ```
-
-
-### Usage
+```shell
+kubectl -n storage apply -f - <<EOF
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: redis-server-service
+subsets:
+  - addresses:
+    - ip: "47.110.67.161"
+    ports:
+    - port: 30679
+      protocol: TCP
+      name: http
+EOF
 ```
-kubectl -n storage get secret redis-credentials -o jsonpath='{.data.redis-password}' | base64 -d
-```
-
-
-### Test
-```
-kubectl -n storage run test --rm -it --image=m.daocloud.io/docker.io/library/redis:7 -- \
-  redis-cli -h redis-master -p 6379 -a uItmVGpX5PShHc8j ping
+```shell
+kubectl -n storage apply -f - <<EOF
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: redis-server-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: redis.72602.online
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: redis-server-service
+            port:
+              number: 6379
+EOF
 ```

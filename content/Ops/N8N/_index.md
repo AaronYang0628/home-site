@@ -17,7 +17,7 @@ title = "N8N"
 
 
 kubectl -n n8n create secret generic n8n-middleware-credential \
-  --from-literal=postgres-password='CBRQQt4xVk4FOtHN' \
+  --from-literal=postgres-password='3HwignC6NM13O8gw' \
   --from-literal=redis-user='default' \
   --from-literal=redis-password='uItmVGpX5PShHc8j'
 
