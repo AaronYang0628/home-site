@@ -53,6 +53,13 @@ spec:
           username: n8n
           existingSecret: postgresql-credentials
         primary:
+          resources:
+            requests:
+              cpu: 2
+              memory: 512Mi
+            limits:
+              cpu: 3
+              memory: 1024Mi
           persistence:
             enabled: true
             storageClass: local-path
