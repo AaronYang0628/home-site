@@ -17,16 +17,19 @@ tags = ["postgresql", "ecs"]
 
 
 ### Prepare `postgresql-credentials`
-```shell
+```
 kubectl get namespaces database > /dev/null 2>&1 || kubectl create namespace database
 kubectl -n database create secret generic postgresql-credentials \
     --from-literal=postgres-password=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16) \
     --from-literal=password=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16) \
     --from-literal=replication-password=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16)
+
+kubectl -n database create secret generic pgadmin-credentials \
+    --from-literal=password=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16)
 ```
 
 ### Deployment
-```yaml
+```
 kubectl -n argocd apply -f - <<EOF
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -89,4 +92,21 @@ spec:
     server: https://kubernetes.default.svc
     namespace: database
 EOF
+```
+
+```
+kubectl -n argocd apply -f /root/home-site/content/Ops/Postgres/pgadmin.app.yaml
+```
+
+```
+POSTGRES_PASSWORD=$(kubectl -n database get secret postgresql-credentials -o jsonpath='{.data.postgres-password}' | base64 -d)
+podman run --rm \
+    --env PGPASSWORD=${POSTGRES_PASSWORD} \
+    --entrypoint psql \
+    -it m.daocloud.io/docker.io/library/postgres:15.2-alpine3.17 \
+    --host host.containers.internal \
+    --port 32543 \
+    --username postgres  \
+    --dbname postgres  \
+    --command 'SELECT datname FROM pg_database;
 ```

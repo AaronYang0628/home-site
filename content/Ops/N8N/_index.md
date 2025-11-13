@@ -14,19 +14,33 @@ title = "N8N"
 - Cert-manager has installed on argoCD and the clusterissuer has a named `letsencrypt`, if not check 🔗<a href="/ops/argo/cd/index.html#manage-basic-components" target="_blank">link</a> </p>
 
 
-
-
+### Preparation
+```
+kubectl get namespaces n8n > /dev/null 2>&1 || kubectl create namespace n8n
 kubectl -n n8n create secret generic n8n-middleware-credential \
-  --from-literal=postgres-password='3HwignC6NM13O8gw' \
-  --from-literal=redis-user='default' \
-  --from-literal=redis-password='uItmVGpX5PShHc8j'
+  --from-literal=postgres-password='3HwignC6NM13O8gw'
+```
 
-
-kubectl -n argocd apply -f /root/home-site/content/Ops/N8N/n8n.values.yaml
 
 ### Deployment
 ```
-kubectl -n argocd apply -f - << EOF
+kubectl -n argocd apply -f /root/home-site/content/Ops/N8N/n8n.values.yaml
+```
+{{% resources title="Related **yaml**" style="primary" expanded="false" pattern=".*\.(yaml|yml)" /%}}
 
-EOF
+### Test
+
+1. test postgresql performance
+```
+SELECT  pid, now() - query_start as duration, query  FROM pg_stat_activity  WHERE state = 'active'  ORDER BY duration DESC
+```
+
+2. test redis performance
+```
+kubectl run -it --rm redis-test --image=m.daocloud.io/docker.io/library/redis:alpine --restart=Never -- \
+  redis-cli -h 47.xxx -p 30679 -a uItmVGpX5PShHc8j ping
+```
+```
+time kubectl run -it --rm redis-test --image=m.daocloud.io/docker.io/library/redis:alpine --restart=Never -- \
+  redis-cli -h 47.xxx -p 30679 -a uItmVGpX5PShHc8j --latency
 ```

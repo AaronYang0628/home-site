@@ -16,12 +16,12 @@ If your VPS is a Linux 64-bit system, you only need to execute the following sen
 
 {{< tabs groupid="proxy-binary" style="transparent" >}}
 {{% tab title="github" icon="fa-brands fa-github" %}}
-```shell
+```
 curl -L https://github.com/snail007/proxy_admin_free/blob/master/install_auto.sh | bash  
 ```
 {{% /tab %}}
 {{% tab title="NFS" icon="fa-solid fa-hard-drive"%}}
-```shell
+```
 wget -o /root/proxy-admin_linux-amd64.tar.gz https://github.com/snail007/proxy_admin_free/blob/master/proxy-admin_linux-amd64.tar.gz
 ```
 {{% /tab %}}
@@ -38,17 +38,17 @@ Select the file that is appropriate for your system and download it, [click to d
 
 {{< tabs groupid="install" title="install on" >}}
 {{% tab title="linux" %}}
-```shell
+```
 ./proxy-admin install
 ```
 {{% /tab %}}
 {{% tab title="MacOS" %}}
-```shell
+```
 ./proxy-admin install
 ```
 {{% /tab %}}
 {{% tab title="Windows" %}}
-```bash
+```
 # Run As Administrator 
 proxy-admin.exe install
 ```
@@ -81,17 +81,17 @@ You can configure the listening port and logging.
 
 {{< tabs groupid="install" title="Uninstall on" >}}
 {{% tab title="linux" %}}
-```shell
+```
 ./proxy-admin uninstall
 ```
 {{% /tab %}}
 {{% tab title="MacOS" %}}
-```shell
+```
 ./proxy-admin uninstall
 ```
 {{% /tab %}}
 {{% tab title="Windows" %}}
-```bash
+```
 # Run As Administrator 
 proxy-admin.exe uninstall
 ```
@@ -103,7 +103,7 @@ proxy-admin.exe uninstall
 
 {{< tabs groupid="install" title="Manage Service on" >}}
 {{% tab title="linux" %}}
-```shell
+```
 proxy-admin start
 
 proxy-admin stop
@@ -116,7 +116,7 @@ proxy-admin restore    #restore data
 ```
 {{% /tab %}}
 {{% tab title="MacOS" %}}
-```shell
+```
 proxy-admin start
 
 proxy-admin stop
@@ -129,7 +129,7 @@ proxy-admin restore    #restore data
 ```
 {{% /tab %}}
 {{% tab title="Windows" %}}
-```bash
+```
 # Run As Administrator 
 c:\
 cd gpa
@@ -151,19 +151,19 @@ proxy-admin restore    #restore data
 
 {{< tabs groupid="install" title="Upgrade Service on" >}}
 {{% tab title="linux" %}}
-```shell
+```
 proxy-admin update
 # proxy-admin update -f
 ```
 {{% /tab %}}
 {{% tab title="MacOS" %}}
-```shell
+```
 proxy-admin update
 # proxy-admin update -f
 ```
 {{% /tab %}}
 {{% tab title="Windows" %}}
-```bash
+```
 # Run As Administrator 
 c:\
 cd gpa

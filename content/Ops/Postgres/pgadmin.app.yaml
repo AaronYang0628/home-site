@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pgadmin
+spec:
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+  project: default
+  source:
+    repoURL: https://helm.runix.net/
+    chart: pgadmin4
+    targetRevision: 1.23.3
+    helm:
+      releaseName: pgadmin4
+      values: |
+        replicaCount: 1
+        persistentVolume:
+          enabled: false
+        env:
+          email: pgadmin@mail.72602.online
+          variables:
+            - name: PGADMIN_CONFIG_WTF_CSRF_ENABLED
+              value: "False"
+        existingSecret: pgadmin-credentials
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 500m
+          limits:
+            memory: 1024Mi
+            cpu: 1000m
+        image:
+          registry: m.daocloud.io/docker.io
+          pullPolicy: IfNotPresent
+        ingress:
+          enabled: true
+          ingressClassName: nginx
+          annotations:
+            cert-manager.io/cluster-issuer: letsencrypt
+          hosts:
+            - host: pgadmin.72602.online
+              paths:
+                - path: /
+                  pathType: ImplementationSpecific
+          tls:
+            - secretName: pgadmin.72602.online-tls
+              hosts:
+                - pgadmin.72602.online
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: database

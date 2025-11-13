@@ -6,7 +6,7 @@ tags = ["redis", "ecs"]
 Due to Resource Limitations, Redis is not installed at home, I put it on the ECS server, and use the following script to start redis image
 
 ### Prepare `redis-credentials`
-```shell
+```
 kubectl get namespaces database > /dev/null 2>&1 || kubectl create namespace database
 kubectl -n database create secret generic redis-credentials \
   --from-literal=redis-password=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 16)
@@ -57,8 +57,9 @@ echo "docker stats redis"
 ```
 
 ### But also use ingress to expose redis service
-```shell
+```
 kubectl -n storage apply -f - <<EOF
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -70,9 +71,7 @@ spec:
     targetPort: 30679
     protocol: TCP
     name: http
-EOF
-```
-```shell
+---
 kubectl -n storage apply -f - <<EOF
 apiVersion: discovery.k8s.io/v1
 kind: EndpointSlice
@@ -85,9 +84,7 @@ subsets:
     - port: 30679
       protocol: TCP
       name: http
-EOF
-```
-```shell
+---
 kubectl -n storage apply -f - <<EOF
 apiVersion: networking.k8s.io/v1
 kind: Ingress
