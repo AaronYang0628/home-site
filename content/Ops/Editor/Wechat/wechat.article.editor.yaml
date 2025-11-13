@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: wechat-article-editor
+spec:
+  project: default
+  source:
+    repoURL: 'git@github.com:AaronYang0628/wechat-article-editor.git'
+    targetRevision: main
+    path: manifests
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: application

@@ -132,7 +132,7 @@ data:
               href: https://www.iyf.tv/?from=1
         - WeChat:
             - abbr: WeChat
-              icon: wechat
+              icon: sh-wechat
               href: https://mp.weixin.qq.com/
         - Medium:
             - abbr: Medium
@@ -154,24 +154,19 @@ data:
             icon: terminal
             ping: 47.110.67.161
             description: SSH Service At 72602 Home
-        - Postgres Ingress:
-            icon: postgres
-            href: https://aws-1-ap-southeast-2.pooler.supabase.com
-            ping: aws-1-ap-southeast-2.pooler.supabase.com
-            description: Supabase Free Postgres Service
+        - Redis Service:
+            icon: redis
+            href: https://redis.72602.online
+            description: Redis Service At ECS 161
     - Argocd APPs:
         - Minio Ingress:
             href: https://console.minio.72602.online
             icon: minio
             description: https://console.minio.72602.online
             siteMonitor: https://console.minio.72602.online
-        - Redis Ingress:
-            icon: redis
-            href: https://redis.72602.online
-            description: https://redis.72602.online
-            widget:
-              type: redis
-              url: tcp://redis.72602.online:30250
+        - Postgres Endpoint:
+            icon: postgres
+            description: postgresql-hl.database.svc.cluster.local:5432
         - N8N Ingress:
             icon: n8n
             href: https://n8n.72602.online
@@ -203,6 +198,11 @@ data:
             icon: nginx
             description: http://agent.demo.72602.online
             siteMonitor: http://agent.demo.72602.online
+        - Wechat Article Editor:
+            href: https://wechat.editor.72602.online
+            icon: sh-wechat
+            description: https://wechat.editor.72602.online
+            siteMonitor: https://wechat.editor.72602.online
     - Conatiners: []
   widgets.yaml: |
     - resources:
