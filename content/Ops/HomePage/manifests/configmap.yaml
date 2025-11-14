@@ -105,10 +105,6 @@ data:
             - abbr: IC
               icon: dashboard-icons-dark
               href: https://dashboardicons.com/
-        - PayWallBuster:
-            - abbr: PWB
-              icon: google-chrome
-              href: https://paywallbuster.com/
     - Media:
         - Twitter:
             - abbr: twitter
@@ -154,19 +150,16 @@ data:
             icon: terminal
             ping: 47.110.67.161
             description: SSH Service At 72602 Home
-        - Redis Service:
-            icon: redis
-            href: https://redis.72602.online
-            description: Redis Service At ECS 161
     - Argocd APPs:
         - Minio Ingress:
             href: https://console.minio.72602.online
             icon: minio
             description: https://console.minio.72602.online
             siteMonitor: https://console.minio.72602.online
-        - Postgres Endpoint:
+        - Postgres Admin Page:
             icon: postgres
-            description: postgresql-hl.database.svc.cluster.local:5432
+            description: https://pgadmin.72602.online
+            siteMonitor: https://pgadmin.72602.online
         - N8N Ingress:
             icon: n8n
             href: https://n8n.72602.online
@@ -217,7 +210,7 @@ data:
     - logo:
         href: http://home.72602.online
         target: _blank 
-        icon: https://raw.githubusercontent.com/AaronYang0628/home-site/refs/heads/main/static/icons/st_icon_alpha.png
+        icon: https://raw.githubusercontent.com/AaronYang0628/home-site/refs/heads/main/static/icons/port_icon.png
   docker.yaml: ""
   custom.css: ""
   custom.js: ""

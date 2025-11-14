@@ -32,15 +32,22 @@ kubectl -n argocd apply -f /root/home-site/content/Ops/N8N/n8n.values.yaml
 
 1. test postgresql performance
 ```
-SELECT  pid, now() - query_start as duration, query  FROM pg_stat_activity  WHERE state = 'active'  ORDER BY duration DESC
+SELECT pid, now() - query_start as duration, query 
+FROM pg_stat_activity
+WHERE state = 'active'  
+ORDER BY duration DESC
 ```
 
 2. test redis performance
 ```
-kubectl run -it --rm redis-test --image=m.daocloud.io/docker.io/library/redis:alpine --restart=Never -- \
-  redis-cli -h 47.xxx -p 30679 -a uItmVGpX5PShHc8j ping
+kubectl run -it --rm redis-test \
+  --image=m.daocloud.io/docker.io/library/redis:alpine \
+  --restart=Never \
+  -- redis-cli -h 47.xxx -p 30679 -a uItmVGpX5PShHc8j ping
 ```
 ```
-time kubectl run -it --rm redis-test --image=m.daocloud.io/docker.io/library/redis:alpine --restart=Never -- \
-  redis-cli -h 47.xxx -p 30679 -a uItmVGpX5PShHc8j --latency
+time kubectl run -it --rm redis-test \
+  --image=m.daocloud.io/docker.io/library/redis:alpine \
+  --restart=Never \
+  -- redis-cli -h 47.xxx -p 30679 -a uItmVGpX5PShHc8j --latency
 ```
