@@ -150,6 +150,11 @@ data:
             icon: terminal
             ping: 47.110.67.161
             description: SSH Service At 72602 Home
+        - Clash At 72602:
+            icon: clash
+            href: http://clash.72602.online
+            escription: http://172.19.65.60:7890
+            siteMonitor: http://clash.72602.online/ui
     - Argocd APPs:
         - Minio Ingress:
             href: https://console.minio.72602.online

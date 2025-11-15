@@ -94,9 +94,6 @@ spec:
 EOF
 ```
 
-```
-kubectl -n argocd apply -f /root/home-site/content/Ops/Postgres/pgadmin.app.yaml
-```
 
 ```
 POSTGRES_PASSWORD=$(kubectl -n database get secret postgresql-credentials -o jsonpath='{.data.postgres-password}' | base64 -d)
@@ -109,4 +106,9 @@ podman run --rm \
     --username postgres  \
     --dbname postgres  \
     --command 'SELECT datname FROM pg_database;
+```
+
+### Deploy pgadmin
+```
+kubectl -n argocd apply -f /root/home-site/content/Ops/Postgres/pgadmin.app.yaml
 ```
