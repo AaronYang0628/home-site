@@ -4,7 +4,7 @@ title = "Clash"
 
 
 ### Install
-```shell
+```
 wget https://github.com/Dreamacro/clash/releases/download/v1.19.0/clash-linux-amd64-v1.19.0.gz
 gzip -d clash-linux-amd64-v1.19.0.gz
 chmod +x clash-linux-amd64-v1.19.0
@@ -12,7 +12,7 @@ mv clash-linux-amd64-v1.19.0 clash
 ```
 
 ### Configuration
-```shell
+```
 vim .env
 CLASH_URL ='https://2e09f299.ghelper.me/subs/clash/xxxxxxx'
 CLASH_SECRET = 'xxxx'
@@ -25,13 +25,13 @@ CLASH_SECRET = 'xxxx'
 
 - 进入项目目录
 
-```bash
+```
 $ cd clash-for-linux
 ```
 
 - 运行启动脚本
 
-```bash
+```
 $ sudo bash start.sh
 
 正在检测订阅地址...
@@ -54,14 +54,14 @@ Secret：xxxxxxxxxxxxx
 
 ```
 
-```bash
+```
 $ source /etc/profile.d/clash.sh
 $ proxy_on
 ```
 
 - 检查服务端口
 
-```bash
+```
 $ netstat -tln | grep -E '9090|789.'
 tcp        0      0 127.0.0.1:9090          0.0.0.0:*               LISTEN     
 tcp6       0      0 :::7890                 :::*                    LISTEN     
@@ -71,7 +71,7 @@ tcp6       0      0 :::7892                 :::*                    LISTEN
 
 - 检查环境变量
 
-```bash
+```
 $ env | grep -E 'http_proxy|https_proxy'
 http_proxy=http://127.0.0.1:7890
 https_proxy=http://127.0.0.1:7890
@@ -80,12 +80,12 @@ https_proxy=http://127.0.0.1:7890
 以上步鄹如果正常，说明服务clash程序启动成功，现在就可以体验高速下载github资源了。
 
 
-```shell
+```
 HOST_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
 echo "宿主机 IP: $HOST_IP"
 ```
 
-```shell
+```
 kubectl create configmap proxy-config \
   --from-literal=http_proxy="http://<$HOST_IP>:7890" \
   --from-literal=https_proxy="http://172.19.65.60:7890" \
@@ -93,8 +93,7 @@ kubectl create configmap proxy-config \
 ```
 
 ### Usage 
-```shell
-
+```
 # 4. 在 Deployment 中使用
 cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1

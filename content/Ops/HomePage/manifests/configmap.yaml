@@ -68,6 +68,14 @@ data:
             - abbr: ACR
               icon: docker-engine
               href: https://cr.console.aliyun.com/cn-hongkong/instance/dashboard
+        - DingDing Dev:
+            - icon: dingding
+              href: https://open-dev.dingtalk.com/
+              description: https://open-dev.dingtalk.com/
+        - DingDing Admin:
+            - icon: dingding
+              href: https://oa.dingtalk.com
+              description: https://oa.dingtalk.com
     - Tool:
         - ChatGPT:
             - abbr: chatgpt
