@@ -1,0 +1,1093 @@
+{
+  "name": "AUTO Medium Article Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "mediumUrl",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "5b68998c-55ca-4910-a071-d5cc336d3d9a",
+              "name": "chunkSize",
+              "value": "=50",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "d5e6a100-82b7-4f41-9ded-39b8ba260343",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3008,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract article content from the previous node\nconst inputData = $input.all()[0].json;\nconst articleText = inputData.textContent || '';\n\nif (!articleText) {\n  return [{\n    json: {\n      error: 'No textContent found in input',\n      availableKeys: Object.keys(inputData)\n    }\n  }];\n}\n$('Workflow Configuration').first().json.mediumUrl\n// Function to split text into semantic chunks\nfunction splitIntoChunks(text, maxWords = 300) {\n  const chunks = [];\n  \n  // Split by double newlines (paragraphs)\n  const paragraphs = text.split(/\\n\\n+/).filter(p => p.trim().length > 0);\n  \n  let currentChunk = '';\n  let chunkIndex = 0;\n  \n  for (const paragraph of paragraphs) {\n    const trimmedParagraph = paragraph.trim();\n    \n    if (!trimmedParagraph) continue;\n    \n    // Count words in current chunk and paragraph\n    const currentWords = currentChunk.split(/\\s+/).filter(w => w.length > 0).length;\n    const paragraphWords = trimmedParagraph.split(/\\s+/).filter(w => w.length > 0).length;\n    \n    // If adding this paragraph would exceed max words\n    if (currentWords + paragraphWords > maxWords && currentWords > 0) {\n      // Save current chunk\n      chunks.push({\n        index: chunkIndex,\n        content: currentChunk.trim(),\n        wordCount: currentWords\n      });\n      chunkIndex++;\n      currentChunk = '';\n    }\n    \n    // If paragraph itself is larger than maxWords, split by sentences\n    if (paragraphWords > maxWords) {\n      // Split by sentences (., !, ?, or newlines)\n      const sentences = trimmedParagraph.match(/[^.!?\\n]+[.!?\\n]+|[^.!?\\n]+$/g) || [trimmedParagraph];\n      \n      for (const sentence of sentences) {\n        const sentenceWords = sentence.trim().split(/\\s+/).filter(w => w.length > 0).length;\n        const currentChunkWords = currentChunk.split(/\\s+/).filter(w => w.length > 0).length;\n        \n        if (currentChunkWords + sentenceWords > maxWords && currentChunkWords > 0) {\n          chunks.push({\n            index: chunkIndex,\n            content: currentChunk.trim(),\n            wordCount: currentChunkWords\n          });\n          chunkIndex++;\n          currentChunk = sentence.trim();\n        } else {\n          currentChunk += (currentChunk ? ' ' : '') + sentence.trim();\n        }\n      }\n    } else {\n      // Add paragraph to current chunk\n      currentChunk += (currentChunk ? '\\n\\n' : '') + trimmedParagraph;\n    }\n  }\n  \n  // Add the last chunk if it has content\n  if (currentChunk.trim().length > 0) {\n    const finalWords = currentChunk.split(/\\s+/).filter(w => w.length > 0).length;\n    chunks.push({\n      index: chunkIndex,\n      content: currentChunk.trim(),\n      wordCount: finalWords\n    });\n  }\n  \n  return chunks;\n}\n\n// Split the article into chunks (300 words max per chunk)\nconst chunks = splitIntoChunks(articleText, $('Workflow Configuration').first().json.chunkSize);\n\n// Get metadata from input\nconst metadata = inputData.metadata || {};\n\n// Return chunks as separate items\nreturn chunks.map(chunk => ({\n  json: {\n    chunkIndex: chunk.index,\n    // totalChunks: chunks.length,\n    content: chunk.content,\n    // wordCount: chunk.wordCount,\n    // Include original metadata for reference\n    originalMetadata: {\n      title: inputData.title,\n      author: inputData.author,\n      sourceUrl: metadata.sourceUrl,\n      totalWordCount: metadata.wordCount\n    }\n  }\n}));"
+      },
+      "id": "36a6e618-fd21-40c7-bb38-f619caf17cd0",
+      "name": "Split Content into Chunks",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2112,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst updatedItems = await Promise.all(items.map(async (item, index) => {\n  try {\n    // 从binary数据中获取HTML内容\n    if (!item.binary || !item.binary.data) {\n      return {\n        json: {\n          error: 'No binary data found',\n          mediumUrl: item.json?.mediumUrl\n        }\n      };\n    }\n    \n    // 获取binary数据\n    const binaryData = item.binary.data;\n    \n    // 使用n8n的helpers读取文件内容\n    const binaryBuffer = await this.helpers.getBinaryDataBuffer(index, 'data');\n    const htmlString = binaryBuffer.toString('utf-8');\n    \n    console.log('HTML loaded, length:', htmlString.length);\n    \n    // 验证HTML内容\n    if (!htmlString || !htmlString.includes('<html')) {\n      return {\n        json: {\n          error: 'Invalid HTML content',\n          length: htmlString.length\n        }\n      };\n    }\n    \n    // 提取main-content部分\n    const mainContentStart = htmlString.indexOf('<div class=\"mt-8 main-content\">');\n    \n    if (mainContentStart === -1) {\n      return {\n        json: {\n          error: 'Main content section not found'\n        }\n      };\n    }\n    \n    // 提取内容\n    const contentAfterStart = htmlString.substring(mainContentStart + '<div class=\"mt-8 main-content\">'.length);\n    \n    // 找到main-content结束位置（在tags div之前）\n    const tagsStart = contentAfterStart.indexOf('<div class=\"flex flex-wrap gap-2 mt-5\">');\n    const mainContent = tagsStart > 0 ? contentAfterStart.substring(0, tagsStart) : contentAfterStart.substring(0, 50000);\n    \n    // 提取文章标题\n    const titleMatch = htmlString.match(/<h1[^>]*>(.*?)<\\/h1>/);\n    const title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : '';\n    \n    // 提取作者\n    const authorMatch = htmlString.match(/<a[^>]*medium\\.com\\/@([^\"]*)\"[^>]*class=\"[^\"]*font-semibold[^\"]*\"[^>]*>([^<]*)<\\/a>/);\n    const author = authorMatch ? authorMatch[2].trim() : 'Reza Rezvani';\n    \n    // 清理HTML并提取纯文本\n    let textContent = mainContent\n      // 移除script和style\n      .replace(/<script\\b[^<]*(?:(?!<\\/script>)<[^<]*)*<\\/script>/gi, '')\n      .replace(/<style\\b[^<]*(?:(?!<\\/style>)<[^<]*)*<\\/style>/gi, '')\n      // 移除嵌入的卡片/链接预览\n      .replace(/<div class=\"items-center p-2 overflow-hidden border[^>]*>[\\s\\S]*?<\\/div>/g, '')\n      // 处理标题\n      .replace(/<h3[^>]*id=\"[^\"]*\"[^>]*>/g, '\\n\\n## ')\n      .replace(/<h4[^>]*id=\"[^\"]*\"[^>]*>/g, '\\n\\n### ')\n      .replace(/<\\/h[34]>/g, '\\n')\n      // 处理段落\n      .replace(/<p[^>]*class=\"leading-8[^>]*>/g, '\\n')\n      .replace(/<\\/p>/g, '\\n')\n      // 处理列表\n      .replace(/<ul[^>]*>/g, '\\n')\n      .replace(/<\\/ul>/g, '\\n')\n      .replace(/<ol[^>]*>/g, '\\n')\n      .replace(/<\\/ol>/g, '\\n')\n      .replace(/<li[^>]*class=\"mt-3\"[^>]*>/g, '\\n• ')\n      .replace(/<li[^>]*>/g, '\\n• ')\n      .replace(/<\\/li>/g, '')\n      // 处理强调\n      .replace(/<strong>/g, '**')\n      .replace(/<\\/strong>/g, '**')\n      .replace(/<em>/g, '_')\n      .replace(/<\\/em>/g, '_')\n      // 处理引用\n      .replace(/<blockquote[^>]*>/g, '\\n> ')\n      .replace(/<\\/blockquote>/g, '\\n')\n      // 处理代码\n      .replace(/<code[^>]*class=\"[^\"]*p-1\\.5[^\"]*\"[^>]*>/g, '`')\n      .replace(/<code[^>]*>/g, '`')\n      .replace(/<\\/code>/g, '`')\n      .replace(/<pre[^>]*>/g, '\\n```\\n')\n      .replace(/<\\/pre>/g, '\\n```\\n')\n      // 处理换行\n      .replace(/<br\\s*\\/?>/g, '\\n')\n      // 移除链接但保留文本\n      .replace(/<a [^>]*>/g, '')\n      .replace(/<\\/a>/g, '')\n      // 移除所有其他标签\n      .replace(/<[^>]+>/g, '')\n      // 处理HTML实体\n      .replace(/&nbsp;/g, ' ')\n      .replace(/&amp;/g, '&')\n      .replace(/&lt;/g, '<')\n      .replace(/&gt;/g, '>')\n      .replace(/&quot;/g, '\"')\n      .replace(/&#39;/g, \"'\")\n      .replace(/&mdash;/g, '—')\n      .replace(/&ndash;/g, '–')\n      .replace(/â€\"/g, '—')\n      .replace(/â€œ/g, '\"')\n      .replace(/â€/g, '\"')\n      .replace(/â€™/g, \"'\")\n      .replace(/â€¢/g, '•')\n      // 清理空白\n      .replace(/\\n{3,}/g, '\\n\\n')\n      .replace(/[ \\t]+/g, ' ')\n      .replace(/^\\s+|\\s+$/gm, '')\n      .trim();\n    \n    // 计算统计信息\n    const words = textContent.split(/\\s+/).filter(w => w.length > 0);\n    const wordCount = words.length;\n    const charCount = textContent.length;\n    const readingTime = Math.ceil(wordCount / 200);\n    \n    return {\n      json: {\n        title,\n        author,\n        textContent,\n        metadata: {\n          sourceUrl: item.json?.mediumUrl,\n          wordCount,\n          charCount,\n          estimatedReadingMinutes: readingTime,\n          extractedAt: new Date().toISOString()\n        }\n      }\n    };\n    \n  } catch (error) {\n    return {\n      json: {\n        error: 'Processing failed',\n        errorMessage: error.message,\n        errorStack: error.stack,\n        mediumUrl: item.json?.mediumUrl\n      }\n    };\n  }\n}));\n\nreturn updatedItems;"
+      },
+      "id": "ec4ae815-342d-475a-80cd-38154554ab8f",
+      "name": "Extract Freedium Content",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2336,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.content }}",
+        "options": {
+          "systemMessage": "You are a professional translator and markdown writer. Translate the provided English text to Chinese. Maintain the original meaning, tone, and style. Response Back Only the Chinese translation without any additional commentary or explanation. But generated Chinese format keep the same as the English markdown  written. like the bold, list and head lines, etc. When you see code sections, you dont need to translate them. just return ``` ignore ```. Be careful about the markdown syntax, keep them working, like insert a black before \"_\" when the translated Chinese missed it. "
+        }
+      },
+      "id": "c618e3e7-0b19-48e5-b024-69e9570feee9",
+      "name": "Translate to Chinese (Whole)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -1888,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "qwen3-max-2025-09-23",
+          "mode": "list",
+          "cachedResultName": "qwen3-max-2025-09-23"
+        },
+        "options": {}
+      },
+      "id": "36517e96-2c76-459c-8029-2cf9c5bb1acf",
+      "name": "Qwen-max",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1824,
+        368
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "3RfSPHHJk9juqKE8",
+          "name": "Tongyi Free"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "yangbo675@yeah.net",
+        "toEmail": "aaron19940628@gmail.com",
+        "subject": "=[Medium中文-Draft]: {{ $('Split Content into Chunks').first().json.originalMetadata.title }}",
+        "emailFormat": "text",
+        "text": "=original-article-url: {{ $('Split Content into Chunks').first().json.originalMetadata.sourceUrl }}\n\nmirrored-article-url: https://freedium-mirror.cfd/{{ $('Split Content into Chunks').first().json.originalMetadata.sourceUrl }}\n\noriginal-article-title: {{ $('Split Content into Chunks').first().json.originalMetadata.title }}\n\n\noriginal-article-author: {{ $('Split Content into Chunks').first().json.originalMetadata.author }}\n\ngenerated-time: {{ $now }}\n\nTranslated Content:\n---\n\n{{ $('Format Markdown').first().json.mergedContent }}",
+        "options": {
+          "attachments": "=images.zip,screenshot.jpg"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -848,
+        -160
+      ],
+      "id": "6302b9dd-20bf-4886-900d-bf04bd53cf49",
+      "name": "Send email",
+      "webhookId": "61f1c046-7a2c-44be-ad93-171cd214dd4b",
+      "credentials": {
+        "smtp": {
+          "id": "z1GxyHupOImKApas",
+          "name": "Netease SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// List of tags to randomly select from\nconst tags = ['productivity', 'self-improvement', 'artificial-intelligence', 'technology', 'data-science', 'software-development', 'programming', 'ai', 'devops'];\n\n// Shuffle the array and select 3 tags\nconst shuffled = tags.sort(() => 0.5 - Math.random());\nconst selectedTags = shuffled.slice(0, 3);\n\n// Create output items with each tag\nconst outputItems = selectedTags.map(tag => ({\n  json: {\n    tag: tag\n  }\n}));\n\nreturn [{json: {tags: selectedTags.map(e=>e)}}];"
+      },
+      "id": "9a54cb3e-0e5e-4557-9c76-2725aa781d71",
+      "name": "Random Select 3 Tags",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4128,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://medium.com/tag/{{ $json.tags[0] }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "511b4aef-94d7-4073-973d-62bfb67d92c1",
+      "name": "Fetch Tag 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -3904,
+        -176
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "url": "=https://medium.com/tag/{{ $json.tags[1] }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "0557f7d8-8fab-4375-af69-5030eb665547",
+      "name": "Fetch Tag 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -3904,
+        32
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "url": "=https://medium.com/tag/{{ $json.tags[2] }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "affe461c-acbc-431a-9a7f-2c94f7403d71",
+      "name": "Fetch Tag 3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -3904,
+        224
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// 提取Medium链接的函数 - 只要付费文章，按价值排序\n// 付费文章基础分：+100\n// 评论权重提高：×15（因为付费文章的评论更有价值）\n// 高互动门槛奖励：超过1000赞+200分，超过30评论+150分\n// 时效性加分更高：最新付费文章+150分\nfunction extractMediumLinks(data) {\n    try {\n        let contentString = null;\n        \n        if (data[0] && data[0].data) {\n            contentString = data[0].data;\n        } else if (data[0] && data[0].json && data[0].json.data) {\n            contentString = data[0].json.data;\n        } else if (data[0] && data[0].json && Array.isArray(data[0].json) && data[0].json[0] && data[0].json[0].data) {\n            contentString = data[0].json[0].data;\n        } else if (typeof data[0] === 'string') {\n            contentString = data[0];\n        } else if (data.data) {\n            contentString = data.data;\n        }\n        \n        if (!contentString) {\n            console.error('无法找到数据');\n            return [];\n        }\n        \n        const articles = [];\n        const seenLinks = new Set();\n        \n        if (contentString.includes('<!doctype html') || contentString.includes('<html')) {\n            console.log('检测到HTML格式');\n            \n            // 从JSON-LD中提取链接和元数据\n            const jsonLdRegex = /<script[^>]*type=\\\"application\\/ld\\+json\\\"[^>]*>([\\s\\S]*?)<\\/script>/g;\n            let jsonLdMatch;\n            \n            while ((jsonLdMatch = jsonLdRegex.exec(contentString)) !== null) {\n                try {\n                    const jsonContent = jsonLdMatch[1];\n                    const jsonData = JSON.parse(jsonContent);\n                    \n                    if (jsonData.mainEntity && Array.isArray(jsonData.mainEntity)) {\n                        jsonData.mainEntity.forEach(item => {\n                            if (item.url && item.url.includes('medium.com')) {\n                                const link = item.url.split('?')[0];\n                                \n                                // 只添加付费文章（isAccessibleForFree: false）\n                                if (!seenLinks.has(link) && item.isAccessibleForFree === false) {\n                                    seenLinks.add(link);\n                                    articles.push({\n                                        link: link,\n                                        headline: item.headline || item.name || '',\n                                        description: item.description || '',\n                                        pubDate: item.datePublished || null,\n                                        isAccessibleForFree: false,\n                                        isPaidContent: true\n                                    });\n                                }\n                            }\n                        });\n                    }\n                } catch (e) {\n                    // 跳过解析失败的JSON\n                }\n            }\n            \n            // 从Apollo State中提取详细互动数据\n            const apolloStateRegex = /window\\.__APOLLO_STATE__\\s*=\\s*({[\\s\\S]*?});/;\n            const apolloMatch = apolloStateRegex.exec(contentString);\n            \n            if (apolloMatch) {\n                try {\n                    const apolloState = JSON.parse(apolloMatch[1]);\n                    \n                    // 遍历Apollo State查找Post数据\n                    Object.keys(apolloState).forEach(key => {\n                        if (key.startsWith('Post:')) {\n                            const post = apolloState[key];\n                            if (post.mediumUrl && post.isLocked === true) {\n                                const link = post.mediumUrl.split('?')[0];\n                                let existingArticle = articles.find(a => a.link === link);\n                                \n                                // 如果文章还不在列表中，但是付费的，就添加进去\n                                if (!existingArticle && !seenLinks.has(link)) {\n                                    seenLinks.add(link);\n                                    existingArticle = {\n                                        link: link,\n                                        headline: post.title || '',\n                                        pubDate: post.firstPublishedAt ? new Date(post.firstPublishedAt).toISOString() : null,\n                                        isAccessibleForFree: false,\n                                        isPaidContent: true\n                                    };\n                                    articles.push(existingArticle);\n                                }\n                                \n                                if (existingArticle) {\n                                    // 添加互动数据\n                                    existingArticle.clapCount = post.clapCount || 0;\n                                    existingArticle.responseCount = post.postResponses?.count || 0;\n                                    existingArticle.readingTime = post.readingTime || 0;\n                                    existingArticle.isLocked = true;\n                                    existingArticle.visibility = post.visibility || 'LOCKED';\n                                    \n                                    // 计算价值分数\n                                    existingArticle.valueScore = calculateValueScore(existingArticle);\n                                }\n                            }\n                        }\n                    });\n                } catch (e) {\n                    console.log('Apollo State解析失败，使用基础排序');\n                }\n            }\n        }\n        \n        // 按价值分数排序（高到低）\n        articles.sort((a, b) => (b.valueScore || 0) - (a.valueScore || 0));\n        \n        console.log(`共找到 ${articles.length} 篇付费文章`);\n        \n        return articles;\n    } catch (error) {\n        console.error('解析错误:', error.message);\n        return [];\n    }\n}\n\n// 计算文章价值分数（针对付费文章优化）\nfunction calculateValueScore(article) {\n    let score = 0;\n    \n    // 1. 互动指标（权重最高）\n    score += (article.clapCount || 0) * 1;  // 每个赞1分\n    score += (article.responseCount || 0) * 15;  // 付费文章的评论更有价值\n    \n    // 2. 付费内容基础加分\n    score += 100;  // 付费文章基础分\n    \n    // 3. 阅读时长合理性（5-20分钟最佳，付费文章通常更长）\n    if (article.readingTime >= 5 && article.readingTime <= 20) {\n        score += 50;\n    } else if (article.readingTime > 20 && article.readingTime <= 30) {\n        score += 30;\n    }\n    \n    // 4. 时效性（最近3天的文章加分）\n    if (article.pubDate) {\n        const daysAgo = (Date.now() - new Date(article.pubDate).getTime()) / (1000 * 60 * 60 * 24);\n        if (daysAgo <= 3) {\n            score += 150;  // 最新付费文章\n        } else if (daysAgo <= 7) {\n            score += 80;\n        } else if (daysAgo <= 14) {\n            score += 40;\n        }\n    }\n    \n    // 5. 高互动门槛（付费文章有高互动说明质量极高）\n    if (article.clapCount > 1000) {\n        score += 200;\n    }\n    if (article.responseCount > 30) {\n        score += 150;\n    }\n    \n    return score;\n}\n\n// 从 $input.all() 获取数据\nconst inputData = $input.all();\n\n// 提取链接\nconst articles = extractMediumLinks(inputData);\n\n// 取价值最高的三个\nconst topThreeArticles = articles.slice(0, 3);\n\n// 返回JSON结果\nreturn topThreeArticles.map(a => ({\n            link: a.link,\n            headline: a.headline,\n            clapCount: a.clapCount,\n            responseCount: a.responseCount,\n            valueScore: a.valueScore,\n            readingTime: a.readingTime,\n            pubDate: a.pubDate,\n            isPaidContent: true\n        }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3680,
+        32
+      ],
+      "id": "5b6866bf-8e13-42e9-9f08-75956f377788",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 提取Medium链接的函数 - 只要付费文章，按价值排序\n// 付费文章基础分：+100\n// 评论权重提高：×15（因为付费文章的评论更有价值）\n// 高互动门槛奖励：超过1000赞+200分，超过30评论+150分\n// 时效性加分更高：最新付费文章+150分\nfunction extractMediumLinks(data) {\n    try {\n        let contentString = null;\n        \n        if (data[0] && data[0].data) {\n            contentString = data[0].data;\n        } else if (data[0] && data[0].json && data[0].json.data) {\n            contentString = data[0].json.data;\n        } else if (data[0] && data[0].json && Array.isArray(data[0].json) && data[0].json[0] && data[0].json[0].data) {\n            contentString = data[0].json[0].data;\n        } else if (typeof data[0] === 'string') {\n            contentString = data[0];\n        } else if (data.data) {\n            contentString = data.data;\n        }\n        \n        if (!contentString) {\n            console.error('无法找到数据');\n            return [];\n        }\n        \n        const articles = [];\n        const seenLinks = new Set();\n        \n        if (contentString.includes('<!doctype html') || contentString.includes('<html')) {\n            console.log('检测到HTML格式');\n            \n            // 从JSON-LD中提取链接和元数据\n            const jsonLdRegex = /<script[^>]*type=\\\"application\\/ld\\+json\\\"[^>]*>([\\s\\S]*?)<\\/script>/g;\n            let jsonLdMatch;\n            \n            while ((jsonLdMatch = jsonLdRegex.exec(contentString)) !== null) {\n                try {\n                    const jsonContent = jsonLdMatch[1];\n                    const jsonData = JSON.parse(jsonContent);\n                    \n                    if (jsonData.mainEntity && Array.isArray(jsonData.mainEntity)) {\n                        jsonData.mainEntity.forEach(item => {\n                            if (item.url && item.url.includes('medium.com')) {\n                                const link = item.url.split('?')[0];\n                                \n                                // 只添加付费文章（isAccessibleForFree: false）\n                                if (!seenLinks.has(link) && item.isAccessibleForFree === false) {\n                                    seenLinks.add(link);\n                                    articles.push({\n                                        link: link,\n                                        headline: item.headline || item.name || '',\n                                        description: item.description || '',\n                                        pubDate: item.datePublished || null,\n                                        isAccessibleForFree: false,\n                                        isPaidContent: true\n                                    });\n                                }\n                            }\n                        });\n                    }\n                } catch (e) {\n                    // 跳过解析失败的JSON\n                }\n            }\n            \n            // 从Apollo State中提取详细互动数据\n            const apolloStateRegex = /window\\.__APOLLO_STATE__\\s*=\\s*({[\\s\\S]*?});/;\n            const apolloMatch = apolloStateRegex.exec(contentString);\n            \n            if (apolloMatch) {\n                try {\n                    const apolloState = JSON.parse(apolloMatch[1]);\n                    \n                    // 遍历Apollo State查找Post数据\n                    Object.keys(apolloState).forEach(key => {\n                        if (key.startsWith('Post:')) {\n                            const post = apolloState[key];\n                            if (post.mediumUrl && post.isLocked === true) {\n                                const link = post.mediumUrl.split('?')[0];\n                                let existingArticle = articles.find(a => a.link === link);\n                                \n                                // 如果文章还不在列表中，但是付费的，就添加进去\n                                if (!existingArticle && !seenLinks.has(link)) {\n                                    seenLinks.add(link);\n                                    existingArticle = {\n                                        link: link,\n                                        headline: post.title || '',\n                                        pubDate: post.firstPublishedAt ? new Date(post.firstPublishedAt).toISOString() : null,\n                                        isAccessibleForFree: false,\n                                        isPaidContent: true\n                                    };\n                                    articles.push(existingArticle);\n                                }\n                                \n                                if (existingArticle) {\n                                    // 添加互动数据\n                                    existingArticle.clapCount = post.clapCount || 0;\n                                    existingArticle.responseCount = post.postResponses?.count || 0;\n                                    existingArticle.readingTime = post.readingTime || 0;\n                                    existingArticle.isLocked = true;\n                                    existingArticle.visibility = post.visibility || 'LOCKED';\n                                    \n                                    // 计算价值分数\n                                    existingArticle.valueScore = calculateValueScore(existingArticle);\n                                }\n                            }\n                        }\n                    });\n                } catch (e) {\n                    console.log('Apollo State解析失败，使用基础排序');\n                }\n            }\n        }\n        \n        // 按价值分数排序（高到低）\n        articles.sort((a, b) => (b.valueScore || 0) - (a.valueScore || 0));\n        \n        console.log(`共找到 ${articles.length} 篇付费文章`);\n        \n        return articles;\n    } catch (error) {\n        console.error('解析错误:', error.message);\n        return [];\n    }\n}\n\n// 计算文章价值分数（针对付费文章优化）\nfunction calculateValueScore(article) {\n    let score = 0;\n    \n    // 1. 互动指标（权重最高）\n    score += (article.clapCount || 0) * 1;  // 每个赞1分\n    score += (article.responseCount || 0) * 15;  // 付费文章的评论更有价值\n    \n    // 2. 付费内容基础加分\n    score += 100;  // 付费文章基础分\n    \n    // 3. 阅读时长合理性（5-20分钟最佳，付费文章通常更长）\n    if (article.readingTime >= 5 && article.readingTime <= 20) {\n        score += 50;\n    } else if (article.readingTime > 20 && article.readingTime <= 30) {\n        score += 30;\n    }\n    \n    // 4. 时效性（最近3天的文章加分）\n    if (article.pubDate) {\n        const daysAgo = (Date.now() - new Date(article.pubDate).getTime()) / (1000 * 60 * 60 * 24);\n        if (daysAgo <= 3) {\n            score += 150;  // 最新付费文章\n        } else if (daysAgo <= 7) {\n            score += 80;\n        } else if (daysAgo <= 14) {\n            score += 40;\n        }\n    }\n    \n    // 5. 高互动门槛（付费文章有高互动说明质量极高）\n    if (article.clapCount > 1000) {\n        score += 200;\n    }\n    if (article.responseCount > 30) {\n        score += 150;\n    }\n    \n    return score;\n}\n\n// 从 $input.all() 获取数据\nconst inputData = $input.all();\n\n// 提取链接\nconst articles = extractMediumLinks(inputData);\n\n// 取价值最高的三个\nconst topThreeArticles = articles.slice(0, 3);\n\n// 返回JSON结果\nreturn topThreeArticles.map(a => ({\n            link: a.link,\n            headline: a.headline,\n            clapCount: a.clapCount,\n            responseCount: a.responseCount,\n            valueScore: a.valueScore,\n            readingTime: a.readingTime,\n            pubDate: a.pubDate,\n            isPaidContent: true\n        }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3680,
+        224
+      ],
+      "id": "3366a8f3-15de-4a61-ab04-5e73245ee6a4",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 提取Medium链接的函数 - 只要付费文章，按价值排序\n// 付费文章基础分：+100\n// 评论权重提高：×15（因为付费文章的评论更有价值）\n// 高互动门槛奖励：超过1000赞+200分，超过30评论+150分\n// 时效性加分更高：最新付费文章+150分\nfunction extractMediumLinks(data) {\n    try {\n        let contentString = null;\n        \n        if (data[0] && data[0].data) {\n            contentString = data[0].data;\n        } else if (data[0] && data[0].json && data[0].json.data) {\n            contentString = data[0].json.data;\n        } else if (data[0] && data[0].json && Array.isArray(data[0].json) && data[0].json[0] && data[0].json[0].data) {\n            contentString = data[0].json[0].data;\n        } else if (typeof data[0] === 'string') {\n            contentString = data[0];\n        } else if (data.data) {\n            contentString = data.data;\n        }\n        \n        if (!contentString) {\n            console.error('无法找到数据');\n            return [];\n        }\n        \n        const articles = [];\n        const seenLinks = new Set();\n        \n        if (contentString.includes('<!doctype html') || contentString.includes('<html')) {\n            console.log('检测到HTML格式');\n            \n            // 从JSON-LD中提取链接和元数据\n            const jsonLdRegex = /<script[^>]*type=\\\"application\\/ld\\+json\\\"[^>]*>([\\s\\S]*?)<\\/script>/g;\n            let jsonLdMatch;\n            \n            while ((jsonLdMatch = jsonLdRegex.exec(contentString)) !== null) {\n                try {\n                    const jsonContent = jsonLdMatch[1];\n                    const jsonData = JSON.parse(jsonContent);\n                    \n                    if (jsonData.mainEntity && Array.isArray(jsonData.mainEntity)) {\n                        jsonData.mainEntity.forEach(item => {\n                            if (item.url && item.url.includes('medium.com')) {\n                                const link = item.url.split('?')[0];\n                                \n                                // 只添加付费文章（isAccessibleForFree: false）\n                                if (!seenLinks.has(link) && item.isAccessibleForFree === false) {\n                                    seenLinks.add(link);\n                                    articles.push({\n                                        link: link,\n                                        headline: item.headline || item.name || '',\n                                        description: item.description || '',\n                                        pubDate: item.datePublished || null,\n                                        isAccessibleForFree: false,\n                                        isPaidContent: true\n                                    });\n                                }\n                            }\n                        });\n                    }\n                } catch (e) {\n                    // 跳过解析失败的JSON\n                }\n            }\n            \n            // 从Apollo State中提取详细互动数据\n            const apolloStateRegex = /window\\.__APOLLO_STATE__\\s*=\\s*({[\\s\\S]*?});/;\n            const apolloMatch = apolloStateRegex.exec(contentString);\n            \n            if (apolloMatch) {\n                try {\n                    const apolloState = JSON.parse(apolloMatch[1]);\n                    \n                    // 遍历Apollo State查找Post数据\n                    Object.keys(apolloState).forEach(key => {\n                        if (key.startsWith('Post:')) {\n                            const post = apolloState[key];\n                            if (post.mediumUrl && post.isLocked === true) {\n                                const link = post.mediumUrl.split('?')[0];\n                                let existingArticle = articles.find(a => a.link === link);\n                                \n                                // 如果文章还不在列表中，但是付费的，就添加进去\n                                if (!existingArticle && !seenLinks.has(link)) {\n                                    seenLinks.add(link);\n                                    existingArticle = {\n                                        link: link,\n                                        headline: post.title || '',\n                                        pubDate: post.firstPublishedAt ? new Date(post.firstPublishedAt).toISOString() : null,\n                                        isAccessibleForFree: false,\n                                        isPaidContent: true\n                                    };\n                                    articles.push(existingArticle);\n                                }\n                                \n                                if (existingArticle) {\n                                    // 添加互动数据\n                                    existingArticle.clapCount = post.clapCount || 0;\n                                    existingArticle.responseCount = post.postResponses?.count || 0;\n                                    existingArticle.readingTime = post.readingTime || 0;\n                                    existingArticle.isLocked = true;\n                                    existingArticle.visibility = post.visibility || 'LOCKED';\n                                    \n                                    // 计算价值分数\n                                    existingArticle.valueScore = calculateValueScore(existingArticle);\n                                }\n                            }\n                        }\n                    });\n                } catch (e) {\n                    console.log('Apollo State解析失败，使用基础排序');\n                }\n            }\n        }\n        \n        // 按价值分数排序（高到低）\n        articles.sort((a, b) => (b.valueScore || 0) - (a.valueScore || 0));\n        \n        console.log(`共找到 ${articles.length} 篇付费文章`);\n        \n        return articles;\n    } catch (error) {\n        console.error('解析错误:', error.message);\n        return [];\n    }\n}\n\n// 计算文章价值分数（针对付费文章优化）\nfunction calculateValueScore(article) {\n    let score = 0;\n    \n    // 1. 互动指标（权重最高）\n    score += (article.clapCount || 0) * 1;  // 每个赞1分\n    score += (article.responseCount || 0) * 15;  // 付费文章的评论更有价值\n    \n    // 2. 付费内容基础加分\n    score += 100;  // 付费文章基础分\n    \n    // 3. 阅读时长合理性（5-20分钟最佳，付费文章通常更长）\n    if (article.readingTime >= 5 && article.readingTime <= 20) {\n        score += 50;\n    } else if (article.readingTime > 20 && article.readingTime <= 30) {\n        score += 30;\n    }\n    \n    // 4. 时效性（最近3天的文章加分）\n    if (article.pubDate) {\n        const daysAgo = (Date.now() - new Date(article.pubDate).getTime()) / (1000 * 60 * 60 * 24);\n        if (daysAgo <= 3) {\n            score += 150;  // 最新付费文章\n        } else if (daysAgo <= 7) {\n            score += 80;\n        } else if (daysAgo <= 14) {\n            score += 40;\n        }\n    }\n    \n    // 5. 高互动门槛（付费文章有高互动说明质量极高）\n    if (article.clapCount > 1000) {\n        score += 200;\n    }\n    if (article.responseCount > 30) {\n        score += 150;\n    }\n    \n    return score;\n}\n\n// 从 $input.all() 获取数据\nconst inputData = $input.all();\n\n// 提取链接\nconst articles = extractMediumLinks(inputData);\n\n// 取价值最高的三个\nconst topThreeArticles = articles.slice(0, 3);\n\n// 返回JSON结果\nreturn topThreeArticles.map(a => ({\n            link: a.link,\n            headline: a.headline,\n            clapCount: a.clapCount,\n            responseCount: a.responseCount,\n            valueScore: a.valueScore,\n            readingTime: a.readingTime,\n            pubDate: a.pubDate,\n            isPaidContent: true\n        }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3680,
+        -176
+      ],
+      "id": "659d6b63-e361-46df-bc71-2d0d2bd2c34b",
+      "name": "Extract Medium Links"
+    },
+    {
+      "parameters": {
+        "jsCode": "const links = $input.all().sort(() => 0.5 - Math.random())\nreturn links.slice(0, 1);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3232,
+        32
+      ],
+      "id": "6c2aee5d-c28c-4bd6-9ff3-42c6ac82ea2b",
+      "name": "Pick One"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $('Fetch Freedium Article').item.binary.data }}",
+              "operator": {
+                "type": "object",
+                "operation": "exists"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "55cfb84d-11ed-4e8c-9909-361f70fcc094",
+      "name": "Check Freedium Response",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2560,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://archive.is/ {{ $('Workflow Configuration').item.json.link }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -2336,
+        224
+      ],
+      "id": "fe36825e-c5c5-4bbe-bd40-e2151eaf8f28",
+      "name": "Fetch Archive.is Data"
+    },
+    {
+      "parameters": {
+        "url": "=https://freedium-mirror.cfd/{{ $json.mediumUrl }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "7974b8e2-8839-426f-b2fb-bf997b8bef76",
+      "name": "Fetch Freedium Article",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -2784,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "sourceData": "binary",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "imageUrl",
+              "cssSelector": "img",
+              "returnValue": "attribute",
+              "attribute": "src",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "23bb53ef-34ed-40b0-9294-4be662af227b",
+      "name": "Extract Image URLs",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -2336,
+        -368
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "imageUrl",
+        "options": {}
+      },
+      "id": "fd756997-33ce-4d03-9f72-67027242de1a",
+      "name": "Split Image URLs",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -2112,
+        -368
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.imageUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": " text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "f52450f0-3786-4247-abd9-4fd53689aeb2",
+      "name": "Download Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1824,
+        -368
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "compress",
+        "binaryPropertyName": "={{ $json.binaryFieldsList }}",
+        "fileName": "={{ $('Fetch Freedium Article').first().json.link }}-image.zip",
+        "binaryPropertyOutput": "images.zip"
+      },
+      "id": "e4939b92-61da-4768-bd44-21b9ec5298cc",
+      "name": "Create ZIP Archive",
+      "type": "n8n-nodes-base.compression",
+      "typeVersion": 1.1,
+      "position": [
+        -1312,
+        -368
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Collect all binary files from multiple items into a single item\n// Store the list of binary property names for the Compression node\nconst outputItem = {\n  json: { \n    imageCount: $input.all().length,\n    binaryFields: [] // Will store the list of binary field names\n  },\n  binary: {}\n};\n\n// Loop through all input items and collect binary data\nfor (let i = 0; i < $input.all().length; i++) {\n  const item = $input.all()[i];\n  \n  // Check if the item has binary data\n  if (item.binary && item.binary.data) {\n    // Use proper naming: file0, file1, file2, etc.\n    const propertyName = `file${i}`;\n    outputItem.binary[propertyName] = item.binary.data;\n    outputItem.json.binaryFields.push(propertyName);\n  }\n}\n\n// Create comma-separated list of binary field names\noutputItem.json.binaryFieldsList = outputItem.json.binaryFields.join(',');\n\nconsole.log('Collected binary files:', outputItem.json.binaryFieldsList);\n\n// Return the single item with all binary files\nreturn [outputItem];"
+      },
+      "id": "37bdb693-0241-4d0e-963a-f85751871874",
+      "name": "Collect Binary Files",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1536,
+        -368
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1088,
+        -176
+      ],
+      "id": "04f56aae-8aab-4b65-8245-5d473f3393e1",
+      "name": "Merge Img And Text"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1536,
+        32
+      ],
+      "id": "40e48a32-3340-42e9-b9d0-4a15e502ac26",
+      "name": "Merge Eng & Chinese"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code 节点 - 简化版\n// 适用于：上一个节点输出的是 JSON 数组\n\n// 方式1: 如果上游节点直接输出数组，每个元素是一个 item\nconst items = $input.all();\nlet dataArray = items.map(item => item.json);\n\n// 如果只有一个 item 且它包含整个数组，使用这个\nif (items.length === 1 && Array.isArray(items[0].json)) {\n  dataArray = items[0].json;\n}\n\n// 按 chunkIndex 排序\ndataArray.sort((a, b) => a.chunkIndex - b.chunkIndex);\n\n// 合并内容\nlet mergedMarkdown = '';\n\ndataArray.forEach((item, index) => {\n  const englishContent = item.content.trim();\n  const chineseContent = item.output.trim();\n  \n  // 清理中文内容：移除 markdown 标记和多余字符\n  const cleanedChinese = chineseContent\n    // .replace(/\\\\n/g, '')           // 移除 \\n 字符串\n    // .replace(/\\n/g, '')            // 移除实际换行符\n    // .replace(/\\\\r/g, '')           // 移除 \\r 字符串\n    // .replace(/\\r/g, '')            // 移除实际回车符\n    // .replace(/\\\\t/g, '')           // 移除 \\t 字符串\n    // .replace(/\\t/g, '')            // 移除实际制表符\n    // .replace(/[#*_`\\[\\]()]/g, '')  // 移除常见 markdown 符号\n    .replace(/\\s+/g, ' ')          // 合并多个空格\n    .trim();\n  \n  // 处理英文内容：在句号后添加换行\n  const formattedEnglish = englishContent.replace(/\\.\\s+/g, '.\\n');\n  \n  // 处理中文内容：在中文句号后添加换行\n  const formattedChinese = cleanedChinese.replace(/。\\s*/g, '。\\n');\n  \n  // 英文用引用符号包裹\n  mergedMarkdown += `> ${formattedEnglish}\\n\\n`;\n  \n  // 中文直接添加\n  mergedMarkdown += `${formattedChinese}\\n\\n`;\n  \n});\n\n// 返回结果\nreturn {\n  mergedContent: mergedMarkdown.trim(),\n  totalChunks: dataArray.length\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1312,
+        32
+      ],
+      "id": "f09499c4-0673-4293-b4aa-c6bcaf8a8388",
+      "name": "Format Markdown"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dingtalk.com/v1.0/oauth2/accessToken",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "appKey",
+              "value": "dinguzvini7nmolqlgdz"
+            },
+            {
+              "name": "appSecret",
+              "value": "jo9_yHL-6rKBhY_MSqDdpFDNFw4VBARF2YDNHZ0xikceLjtNtlJRMj-7IpX636rT"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -2336,
+        416
+      ],
+      "id": "dda1e5de-68e3-4249-8778-9ea444f9ad63",
+      "name": "Get Access Token"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dingtalk.com/v1.0/robot/oToMessages/batchSend",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-acs-dingtalk-access-token",
+              "value": "={{ $json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "robotCode",
+              "value": "dinguzvini7nmolqlgdz"
+            },
+            {
+              "name": "userIds",
+              "value": "[\"08555650631592834015\"]"
+            },
+            {
+              "name": "msgKey",
+              "value": "sampleText"
+            },
+            {
+              "name": "msgParam",
+              "value": "={\"content\":\"Fetch Freedium Article Failed, You might need to take a loook\"}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -2112,
+        416
+      ],
+      "id": "2db4b31e-3aa4-446b-a746-9f48e8da375c",
+      "name": "Send Msg",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "id": "d69defab-3f42-4c67-ae0f-56418cc30571",
+      "name": "Every 4 Hours Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -4352,
+        32
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -3456,
+        16
+      ],
+      "id": "bd4d67c2-f616-4ec8-96fc-7016b4e31237",
+      "name": "Merge Topics"
+    },
+    {
+      "parameters": {
+        "url": "https://api.screenshotone.com/take",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "access_key",
+              "value": "DAs7sKB5mdPqTw"
+            },
+            {
+              "name": "url",
+              "value": "={{ $('Workflow Configuration').item.json.mediumUrl }}"
+            },
+            {
+              "name": "block_ads",
+              "value": "true"
+            },
+            {
+              "name": "block_cookie_banners",
+              "value": "true"
+            },
+            {
+              "name": "block_banners_by_heuristics",
+              "value": "false"
+            },
+            {
+              "name": "block_trackers",
+              "value": "true"
+            },
+            {
+              "name": "delay",
+              "value": "0"
+            },
+            {
+              "name": "timeout",
+              "value": "60"
+            },
+            {
+              "name": "response_type",
+              "value": "by_format"
+            },
+            {
+              "name": "image_quality",
+              "value": "80"
+            },
+            {
+              "name": "clip_x",
+              "value": "600"
+            },
+            {
+              "name": "clip_y",
+              "value": "90"
+            },
+            {
+              "name": "clip_width",
+              "value": "650"
+            },
+            {
+              "name": "clip_height",
+              "value": "360"
+            },
+            {
+              "name": "attachment_name",
+              "value": "screenshot"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": "text/html;q=0.9, image/webp, */*;q=0.8"
+            },
+            {
+              "name": "Cookie",
+              "value": "PHPSESSID=298zf09hf012fh2; csrftoken=u32t4o3tb3gg43; _gat=1"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "file",
+              "outputPropertyName": "screenshot.jpg"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -2336,
+        -176
+      ],
+      "id": "27701332-6b11-49cb-b4a1-06a85d596c2c",
+      "name": "Snapshoot Request",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "N1zoQ2rO5fzdkXEC",
+          "name": "ScreenshotOne Auth"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Fetch Freedium Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Content into Chunks": {
+      "main": [
+        [
+          {
+            "node": "Merge Eng & Chinese",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Translate to Chinese (Whole)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Freedium Content": {
+      "main": [
+        [
+          {
+            "node": "Split Content into Chunks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Translate to Chinese (Whole)": {
+      "main": [
+        [
+          {
+            "node": "Merge Eng & Chinese",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Qwen-max": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Translate to Chinese (Whole)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Random Select 3 Tags": {
+      "main": [
+        [
+          {
+            "node": "Fetch Tag 1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Tag 2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Tag 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Tag 1": {
+      "main": [
+        [
+          {
+            "node": "Extract Medium Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Tag 2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Tag 3": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Merge Topics",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Merge Topics",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Extract Medium Links": {
+      "main": [
+        [
+          {
+            "node": "Merge Topics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick One": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Freedium Response": {
+      "main": [
+        [
+          {
+            "node": "Extract Freedium Content",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract Image URLs",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Snapshoot Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Archive.is Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Access Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Freedium Article": {
+      "main": [
+        [
+          {
+            "node": "Check Freedium Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Image URLs": {
+      "main": [
+        [
+          {
+            "node": "Split Image URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Image URLs": {
+      "main": [
+        [
+          {
+            "node": "Download Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "Collect Binary Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create ZIP Archive": {
+      "main": [
+        [
+          {
+            "node": "Merge Img And Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect Binary Files": {
+      "main": [
+        [
+          {
+            "node": "Create ZIP Archive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Img And Text": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Eng & Chinese": {
+      "main": [
+        [
+          {
+            "node": "Format Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Markdown": {
+      "main": [
+        [
+          {
+            "node": "Merge Img And Text",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Get Access Token": {
+      "main": [
+        [
+          {
+            "node": "Send Msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 4 Hours Trigger": {
+      "main": [
+        [
+          {
+            "node": "Random Select 3 Tags",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Topics": {
+      "main": [
+        [
+          {
+            "node": "Pick One",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Snapshoot Request": {
+      "main": [
+        [
+          {
+            "node": "Merge Img And Text",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "JiNoRdzzl8UC83wV",
+    "timeSavedPerExecution": 30
+  },
+  "versionId": "cb7d7494-f611-4fae-b939-9dc539193166",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e87bf6d2b433cd0e596cc59c744a877463e213136e5320df80234fd4c746a84a"
+  },
+  "id": "JiNoRdzzl8UC83wV",
+  "tags": [
+    {
+      "updatedAt": "2025-11-13T07:12:09.333Z",
+      "createdAt": "2025-11-13T07:12:09.333Z",
+      "id": "PRmDNlD88AH4BVbw",
+      "name": "freedium"
+    }
+  ]
+}

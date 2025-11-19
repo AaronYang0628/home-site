@@ -46,7 +46,7 @@ spec:
             "N8N_SECURE_COOKIE": "false"
             "WEBHOOK_URL": "https://webhook.72602.online"
             "QUEUE_BULL_REDIS_TIMEOUT_THRESHOLD": "30000"
-            "N8N_COMMUNITY_PACKAGES_ENABLED": "false"
+            "N8N_COMMUNITY_PACKAGES_ENABLED": "true"
             "N8N_GIT_NODE_DISABLE_BARE_REPOS": "true"
           persistence:
             enabled: true
@@ -77,7 +77,7 @@ spec:
             enabled: true
             accessMode: ReadWriteOnce
             storageClass: "local-path"
-            size: 5Gi
+            size: 50Gi
           resources:
             requests:
               cpu: 500m

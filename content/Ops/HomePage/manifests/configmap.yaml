@@ -160,8 +160,8 @@ data:
             description: SSH Service At 72602 Home
         - Clash At 72602:
             icon: clash
-            href: http://clash.72602.online
-            escription: http://172.19.65.60:7890
+            href: http://clash.72602.online/ui
+            description: http://172.19.65.60:7890
             siteMonitor: http://clash.72602.online/ui
     - Argocd APPs:
         - Minio Ingress:
