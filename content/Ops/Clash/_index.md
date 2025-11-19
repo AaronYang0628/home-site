@@ -2,8 +2,14 @@
 title = "Clash"
 +++
 
+### Use ECS Clash Directly
+```shell
+export http_proxy=http://47.110.67.161:30890
+export https_proxy=http://47.110.67.161:30890
+```
 
-### Install
+Or you can install clash from zip
+### Install From Zip
 ```
 wget https://github.com/Dreamacro/clash/releases/download/v1.19.0/clash-linux-amd64-v1.19.0.gz
 gzip -d clash-linux-amd64-v1.19.0.gz
