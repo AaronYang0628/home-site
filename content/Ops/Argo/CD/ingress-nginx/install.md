@@ -30,9 +30,9 @@ spec:
               cpu: 200m
               memory: 512Mi
           admissionWebhooks:
-            enabled: true
+            enabled: false
             patch:
-              enabled: true
+              enabled: false
               image:
                 registry: m.daocloud.io/registry.k8s.io
         metrics:

@@ -95,7 +95,7 @@ spec:
               enabled: true
               accessMode: ReadWriteOnce
               storageClass: "local-path"
-              size: 2Gi
+              size: 5Gi
         ingress:
           enabled: true
           className: nginx

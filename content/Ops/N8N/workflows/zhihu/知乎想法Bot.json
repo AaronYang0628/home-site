@@ -1,0 +1,1185 @@
+{
+  "name": "知乎想法Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "25cdb5c3-9dc7-4aea-afc3-36e0896e359d",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        -672
+      ],
+      "id": "6a39c009-f689-4fc1-8c07-a41f3d09e6f1",
+      "name": "is Ok"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-globals.globalConstants",
+      "typeVersion": 1,
+      "position": [
+        -2448,
+        -384
+      ],
+      "id": "e5a6b135-a56f-4340-9193-3e9fe7dec521",
+      "name": "Global Constants",
+      "credentials": {
+        "globalConstantsApi": {
+          "id": "Jjly4kGXXobwJVQx",
+          "name": "Zhihu Request Constant"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -2224,
+        -384
+      ],
+      "id": "b7529747-3fbc-4ee0-aa84-7f81d36d7c28",
+      "name": "Merge",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "59cc08a1-90d9-4fee-89ba-eeae3c5d25a8",
+              "leftValue": "={{ $json['account-name'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2672,
+        32
+      ],
+      "id": "6ab0fcdc-fa9b-4699-ab57-9d1d70ec648c",
+      "name": "Has UserName"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "8QlywT7dEuKZaRKR",
+          "mode": "list",
+          "cachedResultName": "zhihu_user_cookie",
+          "cachedResultUrl": "/projects/AKjnsnZKoJoTBYo2/datatables/8QlywT7dEuKZaRKR"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "userName",
+              "keyValue": "={{ $('Like Configuration').item.json['account-name'] }}"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -2432,
+        -80
+      ],
+      "id": "58db879b-9383-49bb-8cfe-fd23cc45f09e",
+      "name": "Get Specific User"
+    },
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n    \"user-agent\": \"\",\n    \"accept\": \"*/*\",\n    \"accept-language\": \"\",\n    \"priority\": \"u=1, i\",\n    \"sec-ch-ua\": \"\",\n    \"sec-ch-ua-mobile\": \"?0\",\n    \"sec-ch-ua-platform\": \"\",\n    \"sec-fetch-dest\": \"\",\n    \"sec-fetch-mode\": \"\",\n    \"sec-fetch-site\": \"\",\n    \"referer\": \"\",\n    \"x-requested-with\": \"fetch\",\n    \"x-zse-96\": \"\",\n    \"x-zse-93\": \"101_3_3.0\",\n    \"x-zse-81\": \"\",\n    \"x-api-version\": \"3.0.53\",\n    \"account-name\": \"aaron2333\",\n    \"direct-publish\": false\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -3120,
+        -336
+      ],
+      "id": "cfde6748-d34e-4fe4-883f-eb68af8a2029",
+      "name": "Parent WF"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3120,
+        -144
+      ],
+      "id": "92225a3c-caed-425d-8624-b61342ce82a1",
+      "name": "Hit Button"
+    },
+    {
+      "parameters": {
+        "jsCode": "const firstObj = $(\"Global Constants\").first().json;\nconst secondObj = $('Loop Over Items').isExecuted ? $('Loop Over Items').first().json: $('Get Specific User').first().json ;\n\nconst mergedData = {\n  ...firstObj,\n  user: secondObj\n};\n\nreturn [{\n  json: mergedData\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2000,
+        -560
+      ],
+      "id": "f24be579-8ea9-4718-b171-21a9a26a7ec7",
+      "name": "Post Processing"
+    },
+    {
+      "parameters": {
+        "url": "https://httpbin.org/headers",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1776,
+        -560
+      ],
+      "id": "b500d670-eb7d-412f-8d00-28c9ea161c1c",
+      "name": "Retrieve Cookie",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "EgIBXrukQEw9mDVb",
+          "name": "Zhihu Dynamic Cookie"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const headers = $input.first().json.body.headers\nconst cookie = headers.Cookie || headers.cookie;\n\nconst parseCookie = (cookieString) => {\n  const cookies = {};\n  cookieString.split(';').forEach(item => {\n    const parts = item.trim().split('=');\n    if (parts.length >= 2) {\n      const key = parts[0];\n      const value = parts.slice(1).join('='); \n      cookies[key] = value;\n    }\n  });\n  return cookies;\n};\n\nconst cookieObj = parseCookie(cookie);\n\nconst xsrfToken = cookieObj._xsrf || '';\n\nif (!xsrfToken) {\n  throw new Error('_xsrf not found in cookie');\n}\n\nreturn {\n  json: {\n    cookie: cookie,\n    xsrfToken: xsrfToken,\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1552,
+        -560
+      ],
+      "id": "f9d2268d-8897-47e4-9298-1056cc889fea",
+      "name": "Extract Xsrftoken"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "8QlywT7dEuKZaRKR",
+          "mode": "list",
+          "cachedResultName": "zhihu_user_cookie",
+          "cachedResultUrl": "/projects/AKjnsnZKoJoTBYo2/datatables/8QlywT7dEuKZaRKR"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "expiredAt",
+              "condition": "gte",
+              "keyValue": "={{ $now }}"
+            },
+            {}
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        368,
+        -48
+      ],
+      "id": "c2d7c558-9148-413b-9a76-b86d2dbb1e0e",
+      "name": "List All Live Users"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        592,
+        -464
+      ],
+      "id": "54353350-3687-4c33-ad54-7455d41b496e",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "305ecff5-5087-4788-adaa-a57397c09597",
+              "name": "account-name",
+              "value": "={{ $('Parent WF').isExecuted ? $('Parent WF').item.json[\"account-name\"] : \"\"  }}",
+              "type": "string"
+            },
+            {
+              "id": "b3243519-8e64-4116-b132-467832ce05ad",
+              "name": "direct-publish",
+              "value": "={{ $('Parent WF').isExecuted ? $('Parent WF').item.json[\"direct-publish\"] : false  }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2896,
+        -240
+      ],
+      "id": "8ac0b7cb-0268-4744-aec6-ba4b01e92c97",
+      "name": "Like Configuration"
+    },
+    {
+      "parameters": {
+        "errorType": "errorObject",
+        "errorObject": "={\n  \"code\": 10405,\n  \"type\": \"publish thought action failed\",\n  \"reason\": \"用户【{{ $('Post Processing').item.json.user.userName }}】执行发布想法任务失败，但是已经发布草稿箱，请查看，待发布的想法内容为：{{ $('AI Agent').item.json.output.title }}\"\n}"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        592,
+        -672
+      ],
+      "id": "6e343a31-b3c1-4895-ba9c-a24dd2f7ea96",
+      "name": "LIke Action Failed"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Get Specific User').isExecuted }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "6e279b45-3c19-46cb-9b76-10c97886a8f6"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "single"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1f822a54-cd5c-4a29-9e0c-0a9bbef3e34a",
+                    "leftValue": "={{ $('List All Live Users').isExecuted }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "multiple"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        368,
+        -464
+      ],
+      "id": "8d21719c-d2c1-4efb-9803-0bfa9c0e74d4",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.zhihu.com/api/v4/content/publish",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "sec-ch-ua-platform",
+              "value": "={{ $('Post Processing').item.json.constants['sec-ch-ua-platform'] }}"
+            },
+            {
+              "name": "Referer",
+              "value": "={{ $('Post Processing').item.json.constants.referer }}"
+            },
+            {
+              "name": "sec-ch-ua",
+              "value": "={{ $('Post Processing').item.json.constants['sec-ch-ua'] }}"
+            },
+            {
+              "name": "x-zse-96",
+              "value": "={{ $('Post Processing').item.json.user.zse96 }}"
+            },
+            {
+              "name": "sec-ch-ua-mobile",
+              "value": "={{ $('Post Processing').item.json.constants['sec-ch-ua-mobile'] }}"
+            },
+            {
+              "name": "x-requested-with",
+              "value": "={{ $('Post Processing').item.json.constants['x-requested-with'] }}"
+            },
+            {
+              "name": "User-Agent",
+              "value": "={{ $('Post Processing').item.json.constants['user-agent'] }}"
+            },
+            {
+              "name": "x-zst-81",
+              "value": "={{ $('Post Processing').item.json.user.zst81 }}"
+            },
+            {
+              "name": "x-zse-93",
+              "value": "={{ $('Post Processing').item.json.constants['x-zse-93'] }}"
+            },
+            {
+              "name": "x-xsrftoken",
+              "value": "={{ $('Extract Xsrftoken').item.json.xsrfToken }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"action\": \"pin\",\n  \"data\": {\n    \"publish\": {\n      \"traceId\": \"{{ $('Generate UUID').item.json.traceId }}\"\n    },\n    \"commentsPermission\": {\n      \"comment_permission\": \"all\"\n    },\n    \"extra_info\": {\n      \"view_permission\": \"all\",\n      \"publisher\": \"pc\"\n    },\n    \"draft\": {\n      \"disabled\": 1,\n      \"id\": \"{{ $('Fetch Draft ID').item.json.data.result.id }}\"\n    },\n    \"title\": {\n      \"title\": \"{{ $('AI Agent').item.json.output.title }}\"\n    },\n    \"hybrid\": {\n      \"html\": \"{{ $('AI Agent').item.json.output.description }}\",\n      \"textLength\":{{ $('AI Agent').item.json.output.word_count }}\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        144,
+        -624
+      ],
+      "id": "2eb04b3d-aaf0-419a-bd17-7f2043a84fa5",
+      "name": "Pin Post",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "EgIBXrukQEw9mDVb",
+          "name": "Zhihu Dynamic Cookie"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function generateUUID() {\n    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {\n        const r = Math.random() * 16 | 0;\n        const v = c === 'x' ? r : (r & 0x3 | 0x8);\n        return v.toString(16);\n    });\n}\n\nconst traceId = `${Date.now()},${generateUUID()}`;\nreturn { traceId: traceId }"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -768,
+        -560
+      ],
+      "id": "a7d925bd-4e93-4bea-b82a-d1d421336b38",
+      "name": "Generate UUID"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.zhihu.com/content/drafts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "={{ $('Post Processing').item.json.constants.accept }}"
+            },
+            {
+              "name": "accept-language",
+              "value": "={{ $('Post Processing').item.json.constants['accept-language'] }}"
+            },
+            {
+              "name": "origin",
+              "value": "={{ $('Post Processing').item.json.constants.origin }}"
+            },
+            {
+              "name": "priority",
+              "value": "={{ $('Post Processing').item.json.constants.priority }}"
+            },
+            {
+              "name": "referer",
+              "value": "={{ $('Post Processing').item.json.constants.referer }}"
+            },
+            {
+              "name": "sec-ch-ua",
+              "value": "={{ $('Post Processing').item.json.constants['sec-ch-ua'] }}"
+            },
+            {
+              "name": "sec-ch-ua-mobile",
+              "value": "={{ $('Post Processing').item.json.constants['sec-ch-ua-mobile'] }}"
+            },
+            {
+              "name": "sec-ch-ua-platform",
+              "value": "={{ $('Post Processing').item.json.constants['sec-ch-ua-platform'] }}"
+            },
+            {
+              "name": "sec-fetch-dest",
+              "value": "={{ $('Post Processing').item.json.constants['sec-fetch-dest'] }}"
+            },
+            {
+              "name": "sec-fetch-mode",
+              "value": "={{ $('Post Processing').item.json.constants['sec-fetch-mode'] }}"
+            },
+            {
+              "name": "sec-fetch-site",
+              "value": "={{ $('Post Processing').item.json.constants['sec-fetch-site'] }}"
+            },
+            {
+              "name": "user-agent",
+              "value": "={{ $('Post Processing').item.json.constants['user-agent'] }}"
+            },
+            {
+              "name": "x-requested-with",
+              "value": "={{ $('Post Processing').item.json.constants['x-requested-with'] }}"
+            },
+            {
+              "name": "x-xsrftoken",
+              "value": "={{ $('Extract Xsrftoken').item.json.xsrfToken }}"
+            },
+            {
+              "name": "x-zse-93",
+              "value": "={{ $('Post Processing').item.json.constants['x-zse-93'] }}"
+            },
+            {
+              "name": "x-zse-96",
+              "value": "={{ $('Post Processing').item.json.user.zse96 }}"
+            },
+            {
+              "name": "x-zst-81",
+              "value": "={{ $('Post Processing').item.json.user.zst81 }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"action\": \"pin\",\n  \"data\": {\n    \"publish\": {\n      \"traceId\": \"{{ $json.traceId }}\"\n    },\n    \"commentsPermission\": {\n      \"comment_permission\": \"all\"\n    },\n    \"extra_info\": {\n      \"view_permission\": \"all\",\n      \"publisher\": \"pc\"\n    },\n    \"draft\": {\n      \"disabled\": 1\n    },\n    \"title\": {\n      \"title\": \"{{ $('AI Agent').item.json.output.title }}\"\n    },\n    \"hybrid\":{\n      \"html\":\"{{ $('AI Agent').item.json.output.description }}\",\n      \"textLength\":{{ $('AI Agent').item.json.output.word_count }}\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -544,
+        -560
+      ],
+      "id": "22a86784-f38c-43c9-b615-da95a9792b81",
+      "name": "Fetch Draft ID",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "EgIBXrukQEw9mDVb",
+          "name": "Zhihu Dynamic Cookie"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "让我看看你今天能提出什么问题吧！像人类一样提出问题！不能晦涩难懂，要接地气",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=**角色**\n你是一个「洞察分析师」，擅长从纷繁的信息中捕捉被忽略的细节，并提出新颖的、能激发深层讨论的疑问。\n\n**核心能力**\n1.  你拥有一个名为 `FetchHotTopics` 的工具，它可以获取当前最受关注的话题列表及简要背景。\n2.  你的任务不是复述热点，而是基于这些信息，通过联想、反向思考或跨界类比，生成一个独树一帜且合情合理的疑问或想法。\n\n**思考与执行流程**\n1.  **获取信息**：首先，主动调用 `FetchHotTopics` 工具获取当前热点。\n2.  **深度分析**：浏览这些话题，寻找其内在关联、矛盾点或未被言明的潜在影响。思考：“大多数人关注的点是什么？有什么被忽略的视角？”\n3.  **生成创意**：基于你的分析，构建一个疑问或想法。它必须：\n    *   **独树一帜**：角度新颖，出乎意料。\n    *   **合情合理**：逻辑上能够自洽，并非凭空臆想。\n    *   **激发思考**：旨在推动人们跳出常规思维框架。\n\n**输出格式**\n你必须严格以JSON格式输出，且仅包含以下三个键（key）：\n\n```json\n{\n  \"title\": \"（此处是一个120字左右、纯文本、以问号结尾的简短标题）\",\n  \"description\": \"（此处是一段50字以上的描述，用于阐述你的疑问或想法。必须使用HTML标签，如<strong>、<em>、<p>等进行富文本格式化。）\",\n  \"word_count\": （此处是一个整数，是“description”值去除所有HTML标签后的纯文本字数。）\n}\n```\n\n---\n\n**示例输出**\n\n```json\n{\n  \"title\": \"当我们在热议AI生成内容的版权时，是否忽略了它正悄然重塑着‘灵感’本身的定义与源头？\",\n  \"description\": \"<p>我们激烈地争论<strong>AI作品的版权归属</strong>，但这场辩论是否让我们陷入了<em>旧的范式</em>？或许真正值得警惕的是，当创作的第一步——<strong>灵感</strong>——都开始依赖算法推荐和数据集，人类独有的、源于混沌生活和意外联想的创造力，是否会因此被标准化和窄化？</p>\",\n  \"word_count\": 98\n}\n```"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -1328,
+        -560
+      ],
+      "id": "44304bb2-be45-492c-b366-118c098badc6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "url": "https://www.zhihu.com/hot",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+            },
+            {
+              "name": "accept-language",
+              "value": "={{ $('Post Processing').item.json.constants['accept-language'] }}"
+            },
+            {
+              "name": "cache-control",
+              "value": "max-age=0"
+            },
+            {
+              "name": "priority",
+              "value": "u=0, i"
+            },
+            {
+              "name": "sec-ch-ua",
+              "value": "={{ $('Post Processing').item.json.constants['sec-ch-ua'] }}"
+            },
+            {
+              "name": "sec-ch-ua-mobile",
+              "value": "={{ $('Post Processing').item.json.constants['sec-ch-ua-mobile'] }}"
+            },
+            {
+              "name": "sec-ch-ua-platform",
+              "value": "={{ $('Post Processing').item.json.constants['sec-ch-ua-platform'] }}"
+            },
+            {
+              "name": "sec-fetch-dest",
+              "value": "document"
+            },
+            {
+              "name": "sec-fetch-mode",
+              "value": "navigate"
+            },
+            {
+              "name": "sec-fetch-site",
+              "value": "={{ $('Post Processing').item.json.constants['sec-fetch-site'] }}"
+            },
+            {
+              "name": "sec-fetch-user",
+              "value": "?1"
+            },
+            {
+              "name": "upgrade-insecure-requests",
+              "value": "1"
+            },
+            {
+              "name": "user-agent",
+              "value": "={{ $('Post Processing').item.json.constants['user-agent'] }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          }
+        },
+        "optimizeResponse": true,
+        "responseType": "html",
+        "cssSelector": ".HotItem-title",
+        "onlyContent": true,
+        "truncateResponse": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Truncate_Response', ``, 'boolean') }}"
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        -1264,
+        -336
+      ],
+      "id": "e2aabef2-5efc-4491-b166-779d9ae85b7f",
+      "name": "Fetch Hot Topics",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "EgIBXrukQEw9mDVb",
+          "name": "Zhihu Dynamic Cookie"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"title\": \"\",\n  \"description\": \"\",\n  \"word_count\": 98\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1136,
+        -336
+      ],
+      "id": "230ffaec-1e6d-4b28-aa53-439760f76554",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "qwen3-235b-a22b-thinking-2507",
+          "mode": "list",
+          "cachedResultName": "qwen3-235b-a22b-thinking-2507"
+        },
+        "options": {}
+      },
+      "id": "0b56bb0c-7b1b-4656-bb3c-45e9a535ec09",
+      "name": "Qwen-max",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1200,
+        -128
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "3RfSPHHJk9juqKE8",
+          "name": "Tongyi Free"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.zhihu.com/content/drafts/1977317188902880022",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "pin"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "={{ $('Post Processing').item.json.constants.accept }}"
+            },
+            {
+              "name": "accept-language",
+              "value": "={{ $('Post Processing').item.json.constants['accept-language'] }}"
+            },
+            {
+              "name": "origin",
+              "value": "={{ $('Post Processing').item.json.constants.origin }}"
+            },
+            {
+              "name": "priority",
+              "value": "={{ $('Post Processing').item.json.constants.priority }}"
+            },
+            {
+              "name": "referer",
+              "value": "={{ $('Post Processing').item.json.constants.referer }}/creator/manage/creation/draft?type=pin"
+            },
+            {
+              "name": "sec-ch-ua",
+              "value": "={{ $('Post Processing').item.json.constants['sec-ch-ua'] }}"
+            },
+            {
+              "name": "sec-ch-ua-mobile",
+              "value": "={{ $('Post Processing').item.json.constants['sec-ch-ua-mobile'] }}"
+            },
+            {
+              "name": "sec-ch-ua-platform",
+              "value": "={{ $('Post Processing').item.json.constants['sec-ch-ua-platform'] }}"
+            },
+            {
+              "name": "sec-fetch-dest",
+              "value": "={{ $('Post Processing').item.json.constants['sec-fetch-dest'] }}"
+            },
+            {
+              "name": "sec-fetch-mode",
+              "value": "={{ $('Post Processing').item.json.constants['sec-fetch-mode'] }}"
+            },
+            {
+              "name": "sec-fetch-site",
+              "value": "={{ $('Post Processing').item.json.constants['sec-fetch-site'] }}"
+            },
+            {
+              "name": "user-agent",
+              "value": "={{ $('Post Processing').item.json.constants['user-agent'] }}"
+            },
+            {
+              "name": "x-requested-with",
+              "value": "={{ $('Post Processing').item.json.constants['x-requested-with'] }}"
+            },
+            {
+              "name": "x-zse-93",
+              "value": "={{ $('Post Processing').item.json.constants['x-zse-93'] }}"
+            },
+            {
+              "name": "x-zse-96",
+              "value": "={{ $('Post Processing').item.json.user.zse96 }}"
+            },
+            {
+              "name": "x-zst-81",
+              "value": "={{ $('Post Processing').item.json.user.zst81 }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -320,
+        -560
+      ],
+      "id": "7694887b-9b2b-43fb-8b24-e33480c83239",
+      "name": "Pin Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "EgIBXrukQEw9mDVb",
+          "name": "Zhihu Dynamic Cookie"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0dc1ffbd-c8a6-45e5-a451-bff91a3cda30",
+              "leftValue": "={{ $('Like Configuration').item.json['direct-publish'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -96,
+        -560
+      ],
+      "id": "d6786671-62bf-4a43-8ae1-825da30c582f",
+      "name": "Publish Or Not?"
+    },
+    {
+      "parameters": {
+        "amount": "={{ Math.random().round() * 100 }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        816,
+        -288
+      ],
+      "id": "91c6bbcc-2290-4581-b2b5-b788fa43ffae",
+      "name": "Wait",
+      "webhookId": "a37e0ecb-3cd8-4155-add7-a6c0d0457b22"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "is Ok": {
+      "main": [
+        [],
+        [
+          {
+            "node": "LIke Action Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Global Constants": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Post Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has UserName": {
+      "main": [
+        [
+          {
+            "node": "Get Specific User",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "List All Live Users",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Specific User": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Parent WF": {
+      "main": [
+        [
+          {
+            "node": "Like Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hit Button": {
+      "main": [
+        [
+          {
+            "node": "Like Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Processing": {
+      "main": [
+        [
+          {
+            "node": "Retrieve Cookie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Cookie": {
+      "main": [
+        [
+          {
+            "node": "Extract Xsrftoken",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Xsrftoken": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List All Live Users": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Like Configuration": {
+      "main": [
+        [
+          {
+            "node": "Global Constants",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Has UserName",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pin Post": {
+      "main": [
+        [
+          {
+            "node": "is Ok",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate UUID": {
+      "main": [
+        [
+          {
+            "node": "Fetch Draft ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Draft ID": {
+      "main": [
+        [
+          {
+            "node": "Pin Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Generate UUID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Hot Topics": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qwen-max": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pin Request": {
+      "main": [
+        [
+          {
+            "node": "Publish Or Not?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish Or Not?": {
+      "main": [
+        [
+          {
+            "node": "Pin Post",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8f4e7b8e-0034-471f-bdc1-5df36c53c216",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e87bf6d2b433cd0e596cc59c744a877463e213136e5320df80234fd4c746a84a"
+  },
+  "id": "n7Hx8G7DntkylV65",
+  "tags": [
+    {
+      "updatedAt": "2025-11-20T08:23:19.526Z",
+      "createdAt": "2025-11-20T08:23:19.526Z",
+      "id": "6dFxM59VuQ6nfHCI",
+      "name": "action"
+    },
+    {
+      "updatedAt": "2025-11-18T07:22:52.820Z",
+      "createdAt": "2025-11-18T07:22:52.820Z",
+      "id": "xMo86Jtj4eUAi0tt",
+      "name": "auto"
+    },
+    {
+      "updatedAt": "2025-11-21T08:22:13.674Z",
+      "createdAt": "2025-11-21T08:22:13.674Z",
+      "id": "P0cpPGjupBdIATla",
+      "name": "zhihu"
+    }
+  ]
+}

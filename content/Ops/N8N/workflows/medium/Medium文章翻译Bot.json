@@ -1,6 +1,39 @@
 {
-  "name": "AUTO Medium Article Generator",
+  "name": "Medium文章翻译Bot",
   "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "557cd436-e2e9-441d-b079-c23a925333fc",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1680,
+        -128
+      ],
+      "id": "8d9c9028-b8bf-495e-aa40-872fb11b2a43",
+      "name": "200"
+    },
     {
       "parameters": {
         "assignments": {
@@ -8,7 +41,7 @@
             {
               "id": "id-1",
               "name": "mediumUrl",
-              "value": "={{ $json.link }}",
+              "value": "={{ $json.articleURL }}",
               "type": "string"
             },
             {
@@ -27,34 +60,34 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -3008,
-        32
+        -2864,
+        80
       ]
     },
     {
       "parameters": {
-        "jsCode": "// Extract article content from the previous node\nconst inputData = $input.all()[0].json;\nconst articleText = inputData.textContent || '';\n\nif (!articleText) {\n  return [{\n    json: {\n      error: 'No textContent found in input',\n      availableKeys: Object.keys(inputData)\n    }\n  }];\n}\n$('Workflow Configuration').first().json.mediumUrl\n// Function to split text into semantic chunks\nfunction splitIntoChunks(text, maxWords = 300) {\n  const chunks = [];\n  \n  // Split by double newlines (paragraphs)\n  const paragraphs = text.split(/\\n\\n+/).filter(p => p.trim().length > 0);\n  \n  let currentChunk = '';\n  let chunkIndex = 0;\n  \n  for (const paragraph of paragraphs) {\n    const trimmedParagraph = paragraph.trim();\n    \n    if (!trimmedParagraph) continue;\n    \n    // Count words in current chunk and paragraph\n    const currentWords = currentChunk.split(/\\s+/).filter(w => w.length > 0).length;\n    const paragraphWords = trimmedParagraph.split(/\\s+/).filter(w => w.length > 0).length;\n    \n    // If adding this paragraph would exceed max words\n    if (currentWords + paragraphWords > maxWords && currentWords > 0) {\n      // Save current chunk\n      chunks.push({\n        index: chunkIndex,\n        content: currentChunk.trim(),\n        wordCount: currentWords\n      });\n      chunkIndex++;\n      currentChunk = '';\n    }\n    \n    // If paragraph itself is larger than maxWords, split by sentences\n    if (paragraphWords > maxWords) {\n      // Split by sentences (., !, ?, or newlines)\n      const sentences = trimmedParagraph.match(/[^.!?\\n]+[.!?\\n]+|[^.!?\\n]+$/g) || [trimmedParagraph];\n      \n      for (const sentence of sentences) {\n        const sentenceWords = sentence.trim().split(/\\s+/).filter(w => w.length > 0).length;\n        const currentChunkWords = currentChunk.split(/\\s+/).filter(w => w.length > 0).length;\n        \n        if (currentChunkWords + sentenceWords > maxWords && currentChunkWords > 0) {\n          chunks.push({\n            index: chunkIndex,\n            content: currentChunk.trim(),\n            wordCount: currentChunkWords\n          });\n          chunkIndex++;\n          currentChunk = sentence.trim();\n        } else {\n          currentChunk += (currentChunk ? ' ' : '') + sentence.trim();\n        }\n      }\n    } else {\n      // Add paragraph to current chunk\n      currentChunk += (currentChunk ? '\\n\\n' : '') + trimmedParagraph;\n    }\n  }\n  \n  // Add the last chunk if it has content\n  if (currentChunk.trim().length > 0) {\n    const finalWords = currentChunk.split(/\\s+/).filter(w => w.length > 0).length;\n    chunks.push({\n      index: chunkIndex,\n      content: currentChunk.trim(),\n      wordCount: finalWords\n    });\n  }\n  \n  return chunks;\n}\n\n// Split the article into chunks (300 words max per chunk)\nconst chunks = splitIntoChunks(articleText, $('Workflow Configuration').first().json.chunkSize);\n\n// Get metadata from input\nconst metadata = inputData.metadata || {};\n\n// Return chunks as separate items\nreturn chunks.map(chunk => ({\n  json: {\n    chunkIndex: chunk.index,\n    // totalChunks: chunks.length,\n    content: chunk.content,\n    // wordCount: chunk.wordCount,\n    // Include original metadata for reference\n    originalMetadata: {\n      title: inputData.title,\n      author: inputData.author,\n      sourceUrl: metadata.sourceUrl,\n      totalWordCount: metadata.wordCount\n    }\n  }\n}));"
+        "jsCode": "// Extract article content from the previous node\nconst inputData = $input.all()[0].json;\nconst articleText = inputData.textContent || '';\n\nif (!articleText) {\n  return [{\n    json: {\n      error: 'No textContent found in input',\n      availableKeys: Object.keys(inputData)\n    }\n  }];\n}\n\n// Function to split text into semantic chunks\nfunction splitIntoChunks(text, maxWords = 300) {\n  const chunks = [];\n  \n  // Split by double newlines (paragraphs)\n  const paragraphs = text.split(/\\n\\n+/).filter(p => p.trim().length > 0);\n  \n  let currentChunk = '';\n  let chunkIndex = 0;\n  \n  for (const paragraph of paragraphs) {\n    const trimmedParagraph = paragraph.trim();\n    \n    if (!trimmedParagraph) continue;\n    \n    // Count words in current chunk and paragraph\n    const currentWords = currentChunk.split(/\\s+/).filter(w => w.length > 0).length;\n    const paragraphWords = trimmedParagraph.split(/\\s+/).filter(w => w.length > 0).length;\n    \n    // If adding this paragraph would exceed max words\n    if (currentWords + paragraphWords > maxWords && currentWords > 0) {\n      // Save current chunk\n      chunks.push({\n        index: chunkIndex,\n        content: currentChunk.trim(),\n        wordCount: currentWords\n      });\n      chunkIndex++;\n      currentChunk = '';\n    }\n    \n    // If paragraph itself is larger than maxWords, split by sentences\n    if (paragraphWords > maxWords) {\n      // Split by sentences (., !, ?, or newlines)\n      const sentences = trimmedParagraph.match(/[^.!?\\n]+[.!?\\n]+|[^.!?\\n]+$/g) || [trimmedParagraph];\n      \n      for (const sentence of sentences) {\n        const sentenceWords = sentence.trim().split(/\\s+/).filter(w => w.length > 0).length;\n        const currentChunkWords = currentChunk.split(/\\s+/).filter(w => w.length > 0).length;\n        \n        if (currentChunkWords + sentenceWords > maxWords && currentChunkWords > 0) {\n          chunks.push({\n            index: chunkIndex,\n            content: currentChunk.trim(),\n            wordCount: currentChunkWords\n          });\n          chunkIndex++;\n          currentChunk = sentence.trim();\n        } else {\n          currentChunk += (currentChunk ? ' ' : '') + sentence.trim();\n        }\n      }\n    } else {\n      // Add paragraph to current chunk\n      currentChunk += (currentChunk ? '\\n\\n' : '') + trimmedParagraph;\n    }\n  }\n  \n  // Add the last chunk if it has content\n  if (currentChunk.trim().length > 0) {\n    const finalWords = currentChunk.split(/\\s+/).filter(w => w.length > 0).length;\n    chunks.push({\n      index: chunkIndex,\n      content: currentChunk.trim(),\n      wordCount: finalWords\n    });\n  }\n  \n  return chunks;\n}\n\n// Split the article into chunks (300 words max per chunk)\nconst chunks = splitIntoChunks(articleText, $('Workflow Configuration').first().json.chunkSize);\n\n// insert title\nchunks.unshift({index: -1, content: inputData.title || '', wordCount: 0})\n\n// Get metadata from input\nconst metadata = inputData.metadata || {};\n\n// Return chunks as separate items\nreturn chunks.map(chunk => ({\n  json: {\n    chunkIndex: chunk.index,\n    // totalChunks: chunks.length,\n    content: chunk.content,\n    // wordCount: chunk.wordCount,\n    // Include original metadata for reference\n    originalMetadata: {\n      title: inputData.title,\n      author: inputData.author,\n      sourceUrl: metadata.sourceUrl,\n      totalWordCount: metadata.wordCount\n    }\n  }\n}));"
       },
       "id": "36a6e618-fd21-40c7-bb38-f619caf17cd0",
       "name": "Split Content into Chunks",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2112,
-        32
+        -1968,
+        240
       ]
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\n\nconst updatedItems = await Promise.all(items.map(async (item, index) => {\n  try {\n    // 从binary数据中获取HTML内容\n    if (!item.binary || !item.binary.data) {\n      return {\n        json: {\n          error: 'No binary data found',\n          mediumUrl: item.json?.mediumUrl\n        }\n      };\n    }\n    \n    // 获取binary数据\n    const binaryData = item.binary.data;\n    \n    // 使用n8n的helpers读取文件内容\n    const binaryBuffer = await this.helpers.getBinaryDataBuffer(index, 'data');\n    const htmlString = binaryBuffer.toString('utf-8');\n    \n    console.log('HTML loaded, length:', htmlString.length);\n    \n    // 验证HTML内容\n    if (!htmlString || !htmlString.includes('<html')) {\n      return {\n        json: {\n          error: 'Invalid HTML content',\n          length: htmlString.length\n        }\n      };\n    }\n    \n    // 提取main-content部分\n    const mainContentStart = htmlString.indexOf('<div class=\"mt-8 main-content\">');\n    \n    if (mainContentStart === -1) {\n      return {\n        json: {\n          error: 'Main content section not found'\n        }\n      };\n    }\n    \n    // 提取内容\n    const contentAfterStart = htmlString.substring(mainContentStart + '<div class=\"mt-8 main-content\">'.length);\n    \n    // 找到main-content结束位置（在tags div之前）\n    const tagsStart = contentAfterStart.indexOf('<div class=\"flex flex-wrap gap-2 mt-5\">');\n    const mainContent = tagsStart > 0 ? contentAfterStart.substring(0, tagsStart) : contentAfterStart.substring(0, 50000);\n    \n    // 提取文章标题\n    const titleMatch = htmlString.match(/<h1[^>]*>(.*?)<\\/h1>/);\n    const title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : '';\n    \n    // 提取作者\n    const authorMatch = htmlString.match(/<a[^>]*medium\\.com\\/@([^\"]*)\"[^>]*class=\"[^\"]*font-semibold[^\"]*\"[^>]*>([^<]*)<\\/a>/);\n    const author = authorMatch ? authorMatch[2].trim() : 'Reza Rezvani';\n    \n    // 清理HTML并提取纯文本\n    let textContent = mainContent\n      // 移除script和style\n      .replace(/<script\\b[^<]*(?:(?!<\\/script>)<[^<]*)*<\\/script>/gi, '')\n      .replace(/<style\\b[^<]*(?:(?!<\\/style>)<[^<]*)*<\\/style>/gi, '')\n      // 移除嵌入的卡片/链接预览\n      .replace(/<div class=\"items-center p-2 overflow-hidden border[^>]*>[\\s\\S]*?<\\/div>/g, '')\n      // 处理标题\n      .replace(/<h3[^>]*id=\"[^\"]*\"[^>]*>/g, '\\n\\n## ')\n      .replace(/<h4[^>]*id=\"[^\"]*\"[^>]*>/g, '\\n\\n### ')\n      .replace(/<\\/h[34]>/g, '\\n')\n      // 处理段落\n      .replace(/<p[^>]*class=\"leading-8[^>]*>/g, '\\n')\n      .replace(/<\\/p>/g, '\\n')\n      // 处理列表\n      .replace(/<ul[^>]*>/g, '\\n')\n      .replace(/<\\/ul>/g, '\\n')\n      .replace(/<ol[^>]*>/g, '\\n')\n      .replace(/<\\/ol>/g, '\\n')\n      .replace(/<li[^>]*class=\"mt-3\"[^>]*>/g, '\\n• ')\n      .replace(/<li[^>]*>/g, '\\n• ')\n      .replace(/<\\/li>/g, '')\n      // 处理强调\n      .replace(/<strong>/g, '**')\n      .replace(/<\\/strong>/g, '**')\n      .replace(/<em>/g, '_')\n      .replace(/<\\/em>/g, '_')\n      // 处理引用\n      .replace(/<blockquote[^>]*>/g, '\\n> ')\n      .replace(/<\\/blockquote>/g, '\\n')\n      // 处理代码\n      .replace(/<code[^>]*class=\"[^\"]*p-1\\.5[^\"]*\"[^>]*>/g, '`')\n      .replace(/<code[^>]*>/g, '`')\n      .replace(/<\\/code>/g, '`')\n      .replace(/<pre[^>]*>/g, '\\n```\\n')\n      .replace(/<\\/pre>/g, '\\n```\\n')\n      // 处理换行\n      .replace(/<br\\s*\\/?>/g, '\\n')\n      // 移除链接但保留文本\n      .replace(/<a [^>]*>/g, '')\n      .replace(/<\\/a>/g, '')\n      // 移除所有其他标签\n      .replace(/<[^>]+>/g, '')\n      // 处理HTML实体\n      .replace(/&nbsp;/g, ' ')\n      .replace(/&amp;/g, '&')\n      .replace(/&lt;/g, '<')\n      .replace(/&gt;/g, '>')\n      .replace(/&quot;/g, '\"')\n      .replace(/&#39;/g, \"'\")\n      .replace(/&mdash;/g, '—')\n      .replace(/&ndash;/g, '–')\n      .replace(/â€\"/g, '—')\n      .replace(/â€œ/g, '\"')\n      .replace(/â€/g, '\"')\n      .replace(/â€™/g, \"'\")\n      .replace(/â€¢/g, '•')\n      // 清理空白\n      .replace(/\\n{3,}/g, '\\n\\n')\n      .replace(/[ \\t]+/g, ' ')\n      .replace(/^\\s+|\\s+$/gm, '')\n      .trim();\n    \n    // 计算统计信息\n    const words = textContent.split(/\\s+/).filter(w => w.length > 0);\n    const wordCount = words.length;\n    const charCount = textContent.length;\n    const readingTime = Math.ceil(wordCount / 200);\n    \n    return {\n      json: {\n        title,\n        author,\n        textContent,\n        metadata: {\n          sourceUrl: item.json?.mediumUrl,\n          wordCount,\n          charCount,\n          estimatedReadingMinutes: readingTime,\n          extractedAt: new Date().toISOString()\n        }\n      }\n    };\n    \n  } catch (error) {\n    return {\n      json: {\n        error: 'Processing failed',\n        errorMessage: error.message,\n        errorStack: error.stack,\n        mediumUrl: item.json?.mediumUrl\n      }\n    };\n  }\n}));\n\nreturn updatedItems;"
+        "jsCode": "const items = $input.all();\n\nconst updatedItems = await Promise.all(items.map(async (item, index) => {\n  try {\n    // 从binary数据中获取HTML内容\n    if (!item.binary || !item.binary.data) {\n      return {\n        json: {\n          error: 'No binary data found',\n          mediumUrl: $('Workflow Configuration').first().json.articleURL\n        }\n      };\n    }\n    \n    // 获取binary数据\n    const binaryData = item.binary.data;\n    \n    // 使用n8n的helpers读取文件内容\n    const binaryBuffer = await this.helpers.getBinaryDataBuffer(index, 'data');\n    const htmlString = binaryBuffer.toString('utf-8');\n    \n    console.log('HTML loaded, length:', htmlString.length);\n    \n    // 验证HTML内容\n    if (!htmlString || !htmlString.includes('<html')) {\n      return {\n        json: {\n          error: 'Invalid HTML content',\n          length: htmlString.length\n        }\n      };\n    }\n    \n    // 提取main-content部分\n    const mainContentStart = htmlString.indexOf('<div class=\"mt-8 main-content\">');\n    \n    if (mainContentStart === -1) {\n      return {\n        json: {\n          error: 'Main content section not found'\n        }\n      };\n    }\n    \n    // 提取内容\n    const contentAfterStart = htmlString.substring(mainContentStart + '<div class=\"mt-8 main-content\">'.length);\n    \n    // 找到main-content结束位置（在tags div之前）\n    const tagsStart = contentAfterStart.indexOf('<div class=\"flex flex-wrap gap-2 mt-5\">');\n    const mainContent = tagsStart > 0 ? contentAfterStart.substring(0, tagsStart) : contentAfterStart.substring(0, 50000);\n    \n    // 提取文章标题\n    const titleMatch = htmlString.match(/<h1[^>]*>(.*?)<\\/h1>/);\n    const title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : '';\n    \n    // 提取作者\n    const authorMatch = htmlString.match(/<a[^>]*medium\\.com\\/@([^\"]*)\"[^>]*class=\"[^\"]*font-semibold[^\"]*\"[^>]*>([^<]*)<\\/a>/);\n    const author = authorMatch ? authorMatch[2].trim() : 'Reza Rezvani';\n    \n    // 清理HTML并提取纯文本\n    let textContent = mainContent\n      // 移除script和style\n      .replace(/<script\\b[^<]*(?:(?!<\\/script>)<[^<]*)*<\\/script>/gi, '')\n      .replace(/<style\\b[^<]*(?:(?!<\\/style>)<[^<]*)*<\\/style>/gi, '')\n      // 移除嵌入的卡片/链接预览\n      .replace(/<div class=\"items-center p-2 overflow-hidden border[^>]*>[\\s\\S]*?<\\/div>/g, '')\n      // 处理标题\n      .replace(/<h3[^>]*id=\"[^\"]*\"[^>]*>/g, '\\n\\n## ')\n      .replace(/<h4[^>]*id=\"[^\"]*\"[^>]*>/g, '\\n\\n### ')\n      .replace(/<\\/h[34]>/g, '\\n')\n      // 处理段落\n      .replace(/<p[^>]*class=\"leading-8[^>]*>/g, '\\n')\n      .replace(/<\\/p>/g, '\\n')\n      // 处理列表\n      .replace(/<ul[^>]*>/g, '\\n')\n      .replace(/<\\/ul>/g, '\\n')\n      .replace(/<ol[^>]*>/g, '\\n')\n      .replace(/<\\/ol>/g, '\\n')\n      .replace(/<li[^>]*class=\"mt-3\"[^>]*>/g, '\\n• ')\n      .replace(/<li[^>]*>/g, '\\n• ')\n      .replace(/<\\/li>/g, '')\n      // 处理强调\n      .replace(/<strong>/g, '**')\n      .replace(/<\\/strong>/g, '**')\n      .replace(/<em>/g, '_')\n      .replace(/<\\/em>/g, '_')\n      // 处理引用\n      .replace(/<blockquote[^>]*>/g, '\\n> ')\n      .replace(/<\\/blockquote>/g, '\\n')\n      // 处理代码\n      .replace(/<code[^>]*class=\"[^\"]*p-1\\.5[^\"]*\"[^>]*>/g, '`')\n      .replace(/<code[^>]*>/g, '`')\n      .replace(/<\\/code>/g, '`')\n      .replace(/<pre[^>]*>/g, '\\n```\\n')\n      .replace(/<\\/pre>/g, '\\n```\\n')\n      // 处理换行\n      .replace(/<br\\s*\\/?>/g, '\\n')\n      // 移除链接但保留文本\n      .replace(/<a [^>]*>/g, '')\n      .replace(/<\\/a>/g, '')\n      // 移除所有其他标签\n      .replace(/<[^>]+>/g, '')\n      // 处理HTML实体\n      .replace(/&nbsp;/g, ' ')\n      .replace(/&amp;/g, '&')\n      .replace(/&lt;/g, '<')\n      .replace(/&gt;/g, '>')\n      .replace(/&quot;/g, '\"')\n      .replace(/&#39;/g, \"'\")\n      .replace(/&mdash;/g, '—')\n      .replace(/&ndash;/g, '–')\n      .replace(/â€\"/g, '—')\n      .replace(/â€œ/g, '\"')\n      .replace(/â€/g, '\"')\n      .replace(/â€™/g, \"'\")\n      .replace(/â€¢/g, '•')\n      // 清理空白\n      .replace(/\\n{3,}/g, '\\n\\n')\n      .replace(/[ \\t]+/g, ' ')\n      .replace(/^\\s+|\\s+$/gm, '')\n      .trim();\n    \n    // 计算统计信息\n    const words = textContent.split(/\\s+/).filter(w => w.length > 0);\n    const wordCount = words.length;\n    const charCount = textContent.length;\n    const readingTime = Math.ceil(wordCount / 200);\n    \n    return {\n      json: {\n        title,\n        author,\n        textContent,\n        metadata: {\n          sourceUrl: $('Workflow Configuration').first().json.articleURL,\n          wordCount,\n          charCount,\n          estimatedReadingMinutes: readingTime,\n          extractedAt: new Date().toISOString()\n        }\n      }\n    };\n    \n  } catch (error) {\n    return {\n      json: {\n        error: 'Processing failed',\n        errorMessage: error.message,\n        errorStack: error.stack,\n        mediumUrl: $('Workflow Configuration').first().json.articleURL\n      }\n    };\n  }\n}));\n\nreturn updatedItems;"
       },
       "id": "ec4ae815-342d-475a-80cd-38154554ab8f",
       "name": "Extract Freedium Content",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2336,
-        32
+        -2192,
+        240
       ]
     },
     {
@@ -70,9 +103,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3,
       "position": [
-        -1888,
-        144
-      ]
+        -1744,
+        368
+      ],
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -89,8 +123,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -1824,
-        368
+        -1744,
+        592
       ],
       "credentials": {
         "openAiApi": {
@@ -101,47 +135,22 @@
     },
     {
       "parameters": {
-        "fromEmail": "yangbo675@yeah.net",
-        "toEmail": "aaron19940628@gmail.com",
-        "subject": "=[Medium中文-Draft]: {{ $('Split Content into Chunks').first().json.originalMetadata.title }}",
-        "emailFormat": "text",
-        "text": "=original-article-url: {{ $('Split Content into Chunks').first().json.originalMetadata.sourceUrl }}\n\nmirrored-article-url: https://freedium-mirror.cfd/{{ $('Split Content into Chunks').first().json.originalMetadata.sourceUrl }}\n\noriginal-article-title: {{ $('Split Content into Chunks').first().json.originalMetadata.title }}\n\n\noriginal-article-author: {{ $('Split Content into Chunks').first().json.originalMetadata.author }}\n\ngenerated-time: {{ $now }}\n\nTranslated Content:\n---\n\n{{ $('Format Markdown').first().json.mergedContent }}",
-        "options": {
-          "attachments": "=images.zip,screenshot.jpg"
-        }
-      },
-      "type": "n8n-nodes-base.emailSend",
-      "typeVersion": 2.1,
-      "position": [
-        -848,
-        -160
-      ],
-      "id": "6302b9dd-20bf-4886-900d-bf04bd53cf49",
-      "name": "Send email",
-      "webhookId": "61f1c046-7a2c-44be-ad93-171cd214dd4b",
-      "credentials": {
-        "smtp": {
-          "id": "z1GxyHupOImKApas",
-          "name": "Netease SMTP account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "// List of tags to randomly select from\nconst tags = ['productivity', 'self-improvement', 'artificial-intelligence', 'technology', 'data-science', 'software-development', 'programming', 'ai', 'devops'];\n\n// Shuffle the array and select 3 tags\nconst shuffled = tags.sort(() => 0.5 - Math.random());\nconst selectedTags = shuffled.slice(0, 3);\n\n// Create output items with each tag\nconst outputItems = selectedTags.map(tag => ({\n  json: {\n    tag: tag\n  }\n}));\n\nreturn [{json: {tags: selectedTags.map(e=>e)}}];"
+        "jsCode": "// List of tags to randomly select from\nconst tags = ['productivity', 'self-improvement', 'artificial-intelligence', 'technology', 'data-science', 'software-development', 'programming', 'life', 'life-lessons', 'devops', 'time-management', 'mental-health'];\n\n// Shuffle the array and select 3 tags\nconst shuffled = tags.sort(() => 0.5 - Math.random());\nconst selectedTags = shuffled.slice(0, 3);\n\n// Create output items with each tag\nconst outputItems = selectedTags.map(tag => ({\n  json: {\n    tag: tag\n  }\n}));\n\nreturn [{json: {tags: selectedTags.map(e=>e)}}];"
       },
       "id": "9a54cb3e-0e5e-4557-9c76-2725aa781d71",
       "name": "Random Select 3 Tags",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -4128,
-        32
+        -4880,
+        288
       ]
     },
     {
       "parameters": {
         "url": "=https://medium.com/tag/{{ $json.tags[0] }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -168,46 +177,24 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -3904,
-        -176
+        -4656,
+        96
       ],
       "retryOnFail": true,
-      "waitBetweenTries": 5000
-    },
-    {
-      "parameters": {
-        "url": "=https://medium.com/tag/{{ $json.tags[1] }}",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "User-Agent",
-              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            }
-          ]
-        },
-        "options": {
-          "response": {
-            "response": {
-              "responseFormat": "text"
-            }
-          }
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RT05adtzx3d3FgsQ",
+          "name": "Medium Cookie"
         }
       },
-      "id": "0557f7d8-8fab-4375-af69-5030eb665547",
-      "name": "Fetch Tag 2",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        -3904,
-        32
-      ],
-      "retryOnFail": true,
-      "waitBetweenTries": 5000
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "url": "=https://medium.com/tag/{{ $json.tags[2] }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -219,9 +206,7 @@
         },
         "options": {
           "response": {
-            "response": {
-              "responseFormat": "text"
-            }
+            "response": {}
           }
         }
       },
@@ -230,11 +215,18 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -3904,
-        224
+        -4656,
+        480
       ],
       "retryOnFail": true,
-      "waitBetweenTries": 5000
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RT05adtzx3d3FgsQ",
+          "name": "Medium Cookie"
+        }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -243,8 +235,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -3680,
-        32
+        -4432,
+        288
       ],
       "id": "5b6866bf-8e13-42e9-9f08-75956f377788",
       "name": "Code in JavaScript1"
@@ -256,8 +248,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -3680,
-        224
+        -4432,
+        480
       ],
       "id": "3366a8f3-15de-4a61-ab04-5e73245ee6a4",
       "name": "Code in JavaScript2"
@@ -269,21 +261,21 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -3680,
-        -176
+        -4432,
+        96
       ],
       "id": "659d6b63-e361-46df-bc71-2d0d2bd2c34b",
       "name": "Extract Medium Links"
     },
     {
       "parameters": {
-        "jsCode": "const links = $input.all().sort(() => 0.5 - Math.random())\nreturn links.slice(0, 1);"
+        "jsCode": "var articleURL = '';\nvar allItems = $('Merge Topics').all();\ntry {\n  const nodeData = $('Wait').all();\n  if (nodeData && nodeData.length > 0) {\n    console.log('Wait节点执行，发现已经重复处理过的文章');\n    articleURL = $('Wait').first().json.link;\n    allItems = $('Merge Topics').all().filter(item => {\n      return item.json.link !== articleURL;\n    });\n\n  } else {\n    console.log('Wait节点未执行或无数据');\n  }\n} catch (error) {\n  console.log('Wait节点未执行:', error.message);\n}\n\nconst randomIndex = Math.floor(Math.random() * allItems.length);\nreturn [allItems[randomIndex]];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -3232,
-        32
+        -3760,
+        128
       ],
       "id": "6c2aee5d-c28c-4bd6-9ff3-42c6ac82ea2b",
       "name": "Pick One"
@@ -294,21 +286,23 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict",
+            "typeValidation": "loose",
             "version": 2
           },
           "conditions": [
             {
               "id": "id-1",
-              "leftValue": "={{ $('Fetch Freedium Article').item.binary.data }}",
+              "leftValue": "={{ $json.statusCode }}",
               "operator": {
-                "type": "object",
-                "operation": "exists"
-              }
+                "type": "number",
+                "operation": "equals"
+              },
+              "rightValue": 200
             }
           ],
           "combinator": "and"
         },
+        "looseTypeValidation": true,
         "options": {}
       },
       "id": "55cfb84d-11ed-4e8c-9909-361f70fcc094",
@@ -316,23 +310,9 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -2560,
-        32
+        -2416,
+        -16
       ]
-    },
-    {
-      "parameters": {
-        "url": "=https://archive.is/ {{ $('Workflow Configuration').item.json.link }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        -2336,
-        224
-      ],
-      "id": "fe36825e-c5c5-4bbe-bd40-e2151eaf8f28",
-      "name": "Fetch Archive.is Data"
     },
     {
       "parameters": {
@@ -340,6 +320,8 @@
         "options": {
           "response": {
             "response": {
+              "fullResponse": true,
+              "neverError": true,
               "responseFormat": "file"
             }
           }
@@ -350,9 +332,13 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -2784,
-        32
-      ]
+        -2640,
+        80
+      ],
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -376,7 +362,7 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        -2336,
+        -2192,
         -368
       ]
     },
@@ -390,7 +376,7 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        -2112,
+        -1968,
         -368
       ]
     },
@@ -424,7 +410,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -1824,
+        -1680,
         -368
       ]
     },
@@ -440,7 +426,7 @@
       "type": "n8n-nodes-base.compression",
       "typeVersion": 1.1,
       "position": [
-        -1312,
+        -1168,
         -368
       ]
     },
@@ -453,7 +439,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1536,
+        -1392,
         -368
       ]
     },
@@ -461,126 +447,29 @@
       "parameters": {
         "mode": "combine",
         "combineBy": "combineByPosition",
-        "numberInputs": 3,
         "options": {}
       },
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -1088,
-        -176
-      ],
-      "id": "04f56aae-8aab-4b65-8245-5d473f3393e1",
-      "name": "Merge Img And Text"
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        -1536,
-        32
+        -1392,
+        240
       ],
       "id": "40e48a32-3340-42e9-b9d0-4a15e502ac26",
       "name": "Merge Eng & Chinese"
     },
     {
       "parameters": {
-        "jsCode": "// n8n Code 节点 - 简化版\n// 适用于：上一个节点输出的是 JSON 数组\n\n// 方式1: 如果上游节点直接输出数组，每个元素是一个 item\nconst items = $input.all();\nlet dataArray = items.map(item => item.json);\n\n// 如果只有一个 item 且它包含整个数组，使用这个\nif (items.length === 1 && Array.isArray(items[0].json)) {\n  dataArray = items[0].json;\n}\n\n// 按 chunkIndex 排序\ndataArray.sort((a, b) => a.chunkIndex - b.chunkIndex);\n\n// 合并内容\nlet mergedMarkdown = '';\n\ndataArray.forEach((item, index) => {\n  const englishContent = item.content.trim();\n  const chineseContent = item.output.trim();\n  \n  // 清理中文内容：移除 markdown 标记和多余字符\n  const cleanedChinese = chineseContent\n    // .replace(/\\\\n/g, '')           // 移除 \\n 字符串\n    // .replace(/\\n/g, '')            // 移除实际换行符\n    // .replace(/\\\\r/g, '')           // 移除 \\r 字符串\n    // .replace(/\\r/g, '')            // 移除实际回车符\n    // .replace(/\\\\t/g, '')           // 移除 \\t 字符串\n    // .replace(/\\t/g, '')            // 移除实际制表符\n    // .replace(/[#*_`\\[\\]()]/g, '')  // 移除常见 markdown 符号\n    .replace(/\\s+/g, ' ')          // 合并多个空格\n    .trim();\n  \n  // 处理英文内容：在句号后添加换行\n  const formattedEnglish = englishContent.replace(/\\.\\s+/g, '.\\n');\n  \n  // 处理中文内容：在中文句号后添加换行\n  const formattedChinese = cleanedChinese.replace(/。\\s*/g, '。\\n');\n  \n  // 英文用引用符号包裹\n  mergedMarkdown += `> ${formattedEnglish}\\n\\n`;\n  \n  // 中文直接添加\n  mergedMarkdown += `${formattedChinese}\\n\\n`;\n  \n});\n\n// 返回结果\nreturn {\n  mergedContent: mergedMarkdown.trim(),\n  totalChunks: dataArray.length\n};"
+        "jsCode": "// n8n Code 节点 - 简化版\n// 适用于：上一个节点输出的是 JSON 数组\n\n// 方式1: 如果上游节点直接输出数组，每个元素是一个 item\nconst items = $input.all();\nlet dataArray = items.map(item => item.json);\n\n// 如果只有一个 item 且它包含整个数组，使用这个\nif (items.length === 1 && Array.isArray(items[0].json)) {\n  dataArray = items[0].json;\n}\n\ndataArray.pop()\n// 按 chunkIndex 排序\ndataArray.sort((a, b) => a.chunkIndex - b.chunkIndex);\n\n// 合并内容\nlet mergedMarkdown = '';\n\n\ndataArray.forEach((item, index) => {\n  const englishContent = item.content.trim();\n  const chineseContent = item.output.trim();\n  \n  // 清理中文内容：移除 markdown 标记和多余字符\n  const cleanedChinese = chineseContent\n    // .replace(/\\\\n/g, '')           // 移除 \\n 字符串\n    // .replace(/\\n/g, '')            // 移除实际换行符\n    // .replace(/\\\\r/g, '')           // 移除 \\r 字符串\n    // .replace(/\\r/g, '')            // 移除实际回车符\n    // .replace(/\\\\t/g, '')           // 移除 \\t 字符串\n    // .replace(/\\t/g, '')            // 移除实际制表符\n    // .replace(/[#*_`\\[\\]()]/g, '')  // 移除常见 markdown 符号\n    // .replace(/\\s+/g, ' ')          // 合并多个空格\n    .trim();\n  \n  // 处理英文内容：在句号后添加换行\n  const formattedEnglish = englishContent.replace(/\\.\\s+/g, '.\\n');\n  \n  // 处理中文内容：在中文句号后添加换行\n  const formattedChinese = cleanedChinese.replace(/。\\s*/g, '。\\n');\n  \n  // 英文用引用符号包裹\n  mergedMarkdown += `> ${formattedEnglish}\\n\\n`;\n  \n  // 中文直接添加\n  mergedMarkdown += `${formattedChinese}\\n\\n`;\n  \n});\n\n// 返回结果\nreturn {\n  mergedContent: mergedMarkdown.trim(),\n  totalChunks: dataArray.length\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1312,
-        32
+        -1168,
+        240
       ],
       "id": "f09499c4-0673-4293-b4aa-c6bcaf8a8388",
       "name": "Format Markdown"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.dingtalk.com/v1.0/oauth2/accessToken",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {}
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "appKey",
-              "value": "dinguzvini7nmolqlgdz"
-            },
-            {
-              "name": "appSecret",
-              "value": "jo9_yHL-6rKBhY_MSqDdpFDNFw4VBARF2YDNHZ0xikceLjtNtlJRMj-7IpX636rT"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        -2336,
-        416
-      ],
-      "id": "dda1e5de-68e3-4249-8778-9ea444f9ad63",
-      "name": "Get Access Token"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.dingtalk.com/v1.0/robot/oToMessages/batchSend",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "x-acs-dingtalk-access-token",
-              "value": "={{ $json.token }}"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "robotCode",
-              "value": "dinguzvini7nmolqlgdz"
-            },
-            {
-              "name": "userIds",
-              "value": "[\"08555650631592834015\"]"
-            },
-            {
-              "name": "msgKey",
-              "value": "sampleText"
-            },
-            {
-              "name": "msgParam",
-              "value": "={\"content\":\"Fetch Freedium Article Failed, You might need to take a loook\"}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        -2112,
-        416
-      ],
-      "id": "2db4b31e-3aa4-446b-a746-9f48e8da375c",
-      "name": "Send Msg",
-      "alwaysOutputData": true,
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -598,8 +487,8 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        -4352,
-        32
+        -5104,
+        288
       ],
       "retryOnFail": true,
       "waitBetweenTries": 5000
@@ -611,8 +500,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -3456,
-        16
+        -4208,
+        176
       ],
       "id": "bd4d67c2-f616-4ec8-96fc-7016b4e31237",
       "name": "Merge Topics"
@@ -675,7 +564,7 @@
             },
             {
               "name": "clip_width",
-              "value": "650"
+              "value": "660"
             },
             {
               "name": "clip_height",
@@ -707,6 +596,7 @@
         "options": {
           "response": {
             "response": {
+              "fullResponse": true,
               "neverError": true,
               "responseFormat": "file",
               "outputPropertyName": "screenshot.jpg"
@@ -717,21 +607,482 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -2336,
-        -176
+        -1968,
+        -128
       ],
       "id": "27701332-6b11-49cb-b4a1-06a85d596c2c",
       "name": "Snapshoot Request",
       "credentials": {
         "httpBasicAuth": {
           "id": "N1zoQ2rO5fzdkXEC",
-          "name": "ScreenshotOne Auth"
+          "name": "ScreenshotOne Auth [aaron1994]"
         }
       }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.originalMetadata.sourceUrl }}-{{ $json.chunkIndex }}",
+        "sessionTTL": 300
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        -1616,
+        592
+      ],
+      "id": "aa29aa94-45c2-475a-bc58-ef5060a8b9a0",
+      "name": "Embeded Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "98hSQgiQay7FK9cQ",
+          "name": "Embeded Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -944,
+        -48
+      ],
+      "id": "04f56aae-8aab-4b65-8245-5d473f3393e1",
+      "name": "Merge Multiple Media"
+    },
+    {
+      "parameters": {
+        "fromEmail": "yangbo675@yeah.net",
+        "toEmail": "aaron19940628@gmail.com",
+        "subject": "=[Medium中文-Draft]: {{ $('Split Content into Chunks').first().json.originalMetadata.title }}",
+        "emailFormat": "text",
+        "text": "=original-article-url: {{$('Workflow Configuration').first().json.articleURL}}\n\nmirrored-article-url: https://freedium-mirror.cfd/{{$('Workflow Configuration').first().json.articleURL}}\n\noriginal-article-title: {{ $('Split Content into Chunks').first().json.originalMetadata.title }}\n\ntranslated-article-title-pair: {{ $('Merge Eng & Chinese').first().json.output }}--《{{ $('Split Content into Chunks').first().json.originalMetadata.title }}》\n\noriginal-article-author: {{ $('Split Content into Chunks').first().json.originalMetadata.author }}\n\ngenerated-time: {{ $now }}\n\nTranslated Content:\n---\n\n{{ $('Format Markdown').first().json.mergedContent }}",
+        "options": {
+          "attachments": "=images.zip,screenshot.jpg"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -720,
+        -32
+      ],
+      "id": "6302b9dd-20bf-4886-900d-bf04bd53cf49",
+      "name": "Send to Gmail",
+      "webhookId": "61f1c046-7a2c-44be-ad93-171cd214dd4b",
+      "credentials": {
+        "smtp": {
+          "id": "z1GxyHupOImKApas",
+          "name": "Netease SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7bece559-552d-472b-9ca0-fe74a422c581",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3312,
+        128
+      ],
+      "id": "41477f7a-ecab-4128-b8ce-46b634e23a25",
+      "name": "DB isEmpty"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "tSUl0AqPQLw68WJO",
+          "mode": "list",
+          "cachedResultName": "medium_articles",
+          "cachedResultUrl": "/projects/AKjnsnZKoJoTBYo2/datatables/tSUl0AqPQLw68WJO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "articleTitle": "={{ $('Pick One').isExecuted? $('Pick One').item.json.headline : $json['article-headline'] }}",
+            "articleURL": "={{ $('Pick One').isExecuted? $('Pick One').item.json.link : $json['article-link'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "articleURL",
+              "displayName": "articleURL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "articleTitle",
+              "displayName": "articleTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -3088,
+        80
+      ],
+      "id": "b6f70d9b-6772-4872-b92b-01c7da7987bc",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "operation": "rowExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "tSUl0AqPQLw68WJO",
+          "mode": "list",
+          "cachedResultName": "medium_articles",
+          "cachedResultUrl": "/projects/AKjnsnZKoJoTBYo2/datatables/tSUl0AqPQLw68WJO"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "articleURL",
+              "keyValue": "={{ $json.link }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -3536,
+        128
+      ],
+      "id": "0ad41cba-0a94-4ca6-bd6e-790e185e36a9",
+      "name": "Check DB If It Processed",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.screenshotone.com/take",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "access_key",
+              "value": "6OgkQEs7TQDRUg"
+            },
+            {
+              "name": "url",
+              "value": "={{ $('Workflow Configuration').item.json.mediumUrl }}"
+            },
+            {
+              "name": "block_ads",
+              "value": "true"
+            },
+            {
+              "name": "block_cookie_banners",
+              "value": "true"
+            },
+            {
+              "name": "block_banners_by_heuristics",
+              "value": "false"
+            },
+            {
+              "name": "block_trackers",
+              "value": "true"
+            },
+            {
+              "name": "delay",
+              "value": "0"
+            },
+            {
+              "name": "timeout",
+              "value": "60"
+            },
+            {
+              "name": "response_type",
+              "value": "by_format"
+            },
+            {
+              "name": "image_quality",
+              "value": "80"
+            },
+            {
+              "name": "clip_x",
+              "value": "600"
+            },
+            {
+              "name": "clip_y",
+              "value": "90"
+            },
+            {
+              "name": "clip_width",
+              "value": "660"
+            },
+            {
+              "name": "clip_height",
+              "value": "360"
+            },
+            {
+              "name": "attachment_name",
+              "value": "screenshot"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": "text/html;q=0.9, image/webp, */*;q=0.8"
+            },
+            {
+              "name": "Cookie",
+              "value": "PHPSESSID=298zf09hf012fh2; csrftoken=u32t4o3tb3gg43; _gat=1"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "file",
+              "outputPropertyName": "screenshot.jpg"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1392,
+        -64
+      ],
+      "id": "3a5bdb1e-3714-4943-af51-f877b7cec146",
+      "name": "Snapshoot Request1",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "8Uxp7RypTsYelZ1E",
+          "name": "ScreenshotOne Auth [byang628]"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "57977d52-3a16-4c81-8d4c-cdfd3d34c20c",
+              "name": "screenshot.jpg",
+              "value": "screenshot.jpg",
+              "type": "binary"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1168,
+        -128
+      ],
+      "id": "9b55234f-8a20-4b39-b024-5f91bec90def",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "errorType": "errorObject",
+        "errorObject": "{\n  \"code\": 10403,\n  \"type\": \"sampel\",\n  \"reason\": \"Cannot fetch mediurm content\"\n}"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -2192,
+        432
+      ],
+      "id": "c8db8923-aae3-4923-a41e-1e22459a0e89",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "errorType": "errorObject",
+        "errorObject": "={\n  \"code\": 10404,\n  \"msg\": \"{{ $json.error.message }}\"\n}"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -2416,
+        192
+      ],
+      "id": "d158b779-8cd1-4026-9159-bc34ead2efff",
+      "name": "Stop and Error1"
+    },
+    {
+      "parameters": {
+        "type": "random"
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        -3984,
+        192
+      ],
+      "id": "63cf47c1-80da-4390-ba5b-a2d8812805d4",
+      "name": "Sort"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -3088,
+        288
+      ],
+      "id": "8e32c410-81a9-4f2b-8481-dd472ed150ac",
+      "name": "Wait",
+      "webhookId": "2ee48f1b-f217-4945-8829-c6c3ed17b512"
+    },
+    {
+      "parameters": {
+        "formTitle": "Medium Bot",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "article-link",
+              "placeholder": "https://www.medium/...",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "article-headline"
+            }
+          ]
+        },
+        "options": {
+          "path": "medium-bot"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -3728,
+        -160
+      ],
+      "id": "be059514-166b-4a6f-b311-1363cb5902f4",
+      "name": "On form submission",
+      "webhookId": "5c99823a-d680-4a1f-ab81-b50a60b63d9d"
+    },
+    {
+      "parameters": {
+        "url": "=https://medium.com/tag/{{ $json.tags[1] }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "fd8af7fc-4c35-4718-ae36-98c40b409e04",
+      "name": "Fetch Tag 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -4656,
+        288
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RT05adtzx3d3FgsQ",
+          "name": "Medium Cookie"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {},
   "connections": {
+    "200": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Snapshoot Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Workflow Configuration": {
       "main": [
         [
@@ -801,12 +1152,12 @@
             "index": 0
           },
           {
-            "node": "Fetch Tag 2",
+            "node": "Fetch Tag 3",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Fetch Tag 3",
+            "node": "Fetch Tag 2",
             "type": "main",
             "index": 0
           }
@@ -818,17 +1169,6 @@
         [
           {
             "node": "Extract Medium Links",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Fetch Tag 2": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript1",
             "type": "main",
             "index": 0
           }
@@ -883,7 +1223,7 @@
       "main": [
         [
           {
-            "node": "Workflow Configuration",
+            "node": "Check DB If It Processed",
             "type": "main",
             "index": 0
           }
@@ -911,12 +1251,7 @@
         ],
         [
           {
-            "node": "Fetch Archive.is Data",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Get Access Token",
+            "node": "Stop and Error",
             "type": "main",
             "index": 0
           }
@@ -928,6 +1263,13 @@
         [
           {
             "node": "Check Freedium Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error1",
             "type": "main",
             "index": 0
           }
@@ -971,7 +1313,7 @@
       "main": [
         [
           {
-            "node": "Merge Img And Text",
+            "node": "Merge Multiple Media",
             "type": "main",
             "index": 0
           }
@@ -983,17 +1325,6 @@
         [
           {
             "node": "Create ZIP Archive",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Merge Img And Text": {
-      "main": [
-        [
-          {
-            "node": "Send email",
             "type": "main",
             "index": 0
           }
@@ -1015,20 +1346,9 @@
       "main": [
         [
           {
-            "node": "Merge Img And Text",
+            "node": "Merge Multiple Media",
             "type": "main",
             "index": 2
-          }
-        ]
-      ]
-    },
-    "Get Access Token": {
-      "main": [
-        [
-          {
-            "node": "Send Msg",
-            "type": "main",
-            "index": 0
           }
         ]
       ]
@@ -1048,7 +1368,7 @@
       "main": [
         [
           {
-            "node": "Pick One",
+            "node": "Sort",
             "type": "main",
             "index": 0
           }
@@ -1059,9 +1379,137 @@
       "main": [
         [
           {
-            "node": "Merge Img And Text",
+            "node": "200",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeded Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Translate to Chinese (Whole)",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Multiple Media": {
+      "main": [
+        [
+          {
+            "node": "Send to Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check DB If It Processed": {
+      "main": [
+        [
+          {
+            "node": "DB isEmpty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB isEmpty": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Snapshoot Request1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge Multiple Media",
             "type": "main",
             "index": 1
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Pick One",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Tag 2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -1073,10 +1521,10 @@
     "saveDataSuccessExecution": "none",
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false,
-    "errorWorkflow": "JiNoRdzzl8UC83wV",
+    "errorWorkflow": "p5RyLH2hmXeM17r3",
     "timeSavedPerExecution": 30
   },
-  "versionId": "cb7d7494-f611-4fae-b939-9dc539193166",
+  "versionId": "b74f88bb-4a75-44ec-8473-252c42e3f8e0",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "e87bf6d2b433cd0e596cc59c744a877463e213136e5320df80234fd4c746a84a"
@@ -1084,10 +1532,28 @@
   "id": "JiNoRdzzl8UC83wV",
   "tags": [
     {
-      "updatedAt": "2025-11-13T07:12:09.333Z",
-      "createdAt": "2025-11-13T07:12:09.333Z",
-      "id": "PRmDNlD88AH4BVbw",
-      "name": "freedium"
+      "updatedAt": "2025-11-18T07:22:52.820Z",
+      "createdAt": "2025-11-18T07:22:52.820Z",
+      "id": "xMo86Jtj4eUAi0tt",
+      "name": "auto"
+    },
+    {
+      "updatedAt": "2025-11-18T08:04:00.457Z",
+      "createdAt": "2025-11-18T08:04:00.457Z",
+      "id": "NJN3bkKSRbRk3eNK",
+      "name": "article"
+    },
+    {
+      "updatedAt": "2025-11-21T08:22:11.294Z",
+      "createdAt": "2025-11-21T08:22:11.294Z",
+      "id": "Drdzq9pIb5BgLEIN",
+      "name": "wechat"
+    },
+    {
+      "updatedAt": "2025-11-21T08:22:13.674Z",
+      "createdAt": "2025-11-21T08:22:13.674Z",
+      "id": "P0cpPGjupBdIATla",
+      "name": "zhihu"
     }
   ]
 }

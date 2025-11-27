@@ -161,8 +161,13 @@ data:
         - Clash At 72602:
             icon: clash
             href: http://clash.72602.online/ui
-            description: http://172.19.65.60:7890
+            description: http://47.110.67.161:30890
             siteMonitor: http://clash.72602.online/ui
+        - Httpbin:
+            icon: lighttpd
+            href: http://httpbin.72602.online/headers
+            description: Fetch Your Headers 
+            siteMonitor: http://httpbin.72602.online
     - Argocd APPs:
         - Minio Ingress:
             href: https://console.minio.72602.online
