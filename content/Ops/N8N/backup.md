@@ -17,3 +17,6 @@ n8n import:entities --inputDir ./outputs --truncateTables true
 n8n import:workflow --separate --input=backups/workflows/
 n8n import:credentials --separate --input=backups/credentials/
 ```
+
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYmViNWE4Ny0zZWJkLTQ3MGUtODMzNS1mMTUwMjRmOGUxMWMiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY0OTk3NTIyfQ.RXRoNUve1BEAG0WsqDfjOnoQcAVX4Y8G1LFVc4B1ZTY

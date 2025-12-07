@@ -165,9 +165,9 @@ data:
             siteMonitor: http://clash.72602.online/ui
         - Httpbin:
             icon: lighttpd
-            href: http://httpbin.72602.online/headers
+            href: https://httpbin.72602.online/headers
             description: Fetch Your Headers 
-            siteMonitor: http://httpbin.72602.online
+            siteMonitor: https://httpbin.72602.online/headers
     - Argocd APPs:
         - Minio Ingress:
             href: https://console.minio.72602.online
