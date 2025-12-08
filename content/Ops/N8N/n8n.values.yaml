@@ -7,7 +7,7 @@ spec:
   source:
     repoURL: https://aaronyang0628.github.io/helm-chart-mirror/charts
     chart: n8n
-    targetRevision: 1.16.1
+    targetRevision: 1.16.8
     helm:
       releaseName: n8n
       values: |
@@ -16,10 +16,10 @@ spec:
             allowInsecureImages: true
         extraEnvVars: 
           "HTTP_PROXY": "http://47.110.67.161:30890"
-          "HTTPS_PROXY": "http://47.110.67.161/:30890"
+          "HTTPS_PROXY": "http://47.110.67.161:30890"
         image:
           repository: m.daocloud.io/docker.io/n8nio/n8n
-          tag: 1.119.1-amd64
+          tag: 1.123.3-amd64
         log:
           level: info
         encryptionKey: "72602-n8n"
@@ -36,7 +36,7 @@ spec:
           count: 1
           extraEnvVars:
             "HTTP_PROXY": "http://47.110.67.161:30890"
-            "HTTPS_PROXY": "http://47.110.67.161/:30890"
+            "HTTPS_PROXY": "http://47.110.67.161:30890"
             "N8N_BLOCK_ENV_ACCESS_IN_NODE": "false"
             "EXECUTIONS_TIMEOUT": "300"
             "EXECUTIONS_TIMEOUT_MAX": "600"
@@ -68,11 +68,12 @@ spec:
             enabled: false
           extraEnvVars:
             "HTTP_PROXY": "http://47.110.67.161:30890"
-            "HTTPS_PROXY": "http://47.110.67.161/:30890"
+            "HTTPS_PROXY": "http://47.110.67.161:30890"
             "EXECUTIONS_TIMEOUT": "300"
             "EXECUTIONS_TIMEOUT_MAX": "600"
             "DB_POSTGRESDB_POOL_SIZE": "5"
             "QUEUE_BULL_REDIS_TIMEOUT_THRESHOLD": "60000"
+            "N8N_COMMUNITY_PACKAGES_ENABLED": "true"
             "N8N_GIT_NODE_DISABLE_BARE_REPOS": "true"
           persistence:
             enabled: true
@@ -86,6 +87,11 @@ spec:
             limits:
               cpu: 1000m
               memory: 2048Mi
+        nodes:
+          external:
+            allowAll: true
+            packages:
+              - n8n-nodes-globals
         redis:
           enabled: true
           image:

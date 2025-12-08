@@ -21,7 +21,7 @@ mv clash-linux-amd64-v1.19.0 clash
 ```
 vim .env
 CLASH_URL ='https://2e09f299.ghelper.me/subs/clash/xxxxxxx'
-CLASH_SECRET = 'xxxx'
+CLASH_SECRET = 'fafdc2a05547c8c18709222a745ddac0465f8b52b1c441e62043c6c2da353082'
 ```
 
 
