@@ -34,6 +34,27 @@ data:
       Tool:
         iconsOnly: true
   bookmarks.yaml: |
+    - MediumCN:
+        - WeChat:
+            - abbr: WeChat
+              icon: sh-wechat
+              href: https://mp.weixin.qq.com/s/NrKLiqF4NPAgEEa5f3DNvg
+              description: Medium中文公众号
+        - Zhihu:
+            - abbr: Zhihu
+              icon: si-zhihu
+              href: https://www.zhihu.com/people/aaron2333
+              description: Medium中文知乎
+        - Weibo:
+            - abbr: Weibo
+              icon: si-sinaweibo
+              href: https://weibo.com/mediumzhcn
+              description: Medium中文微博
+        - Toutiao:
+            - abbr: Toutiao
+              icon: toutiao
+              href: https://www.toutiao.com/
+              description: Medium中文微博
     - Blog:
         - DEV-BLOG:
             - abbr: ay's dev blog
@@ -163,11 +184,6 @@ data:
             href: http://clash.72602.online/ui
             description: http://47.110.67.161:30890
             siteMonitor: http://clash.72602.online/ui
-        - Httpbin:
-            icon: lighttpd
-            href: https://httpbin.72602.online/headers
-            description: Fetch Your Headers 
-            siteMonitor: https://httpbin.72602.online/headers
     - Argocd APPs:
         - Minio Ingress:
             href: https://console.minio.72602.online

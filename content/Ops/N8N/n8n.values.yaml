@@ -45,6 +45,7 @@ spec:
             "N8N_CONCURRENCY_PRODUCTION_LIMIT": "5"
             "NODE_TLS_REJECT_UNAUTHORIZED": "0"
             "N8N_SECURE_COOKIE": "false"
+            "NODES_EXCLUDE": []
             "WEBHOOK_URL": "https://webhook.72602.online"
             "QUEUE_BULL_REDIS_TIMEOUT_THRESHOLD": "60000"
             "N8N_COMMUNITY_PACKAGES_ENABLED": "true"
@@ -72,6 +73,7 @@ spec:
             "EXECUTIONS_TIMEOUT": "300"
             "EXECUTIONS_TIMEOUT_MAX": "600"
             "DB_POSTGRESDB_POOL_SIZE": "5"
+            "NODES_EXCLUDE": []
             "QUEUE_BULL_REDIS_TIMEOUT_THRESHOLD": "60000"
             "N8N_COMMUNITY_PACKAGES_ENABLED": "true"
             "N8N_GIT_NODE_DISABLE_BARE_REPOS": "true"
@@ -88,22 +90,26 @@ spec:
               cpu: 1000m
               memory: 2048Mi
         nodes:
+          builtin:
+            enabled: true
+            modules:
+              - crypto
+              - fs
           external:
             allowAll: true
             packages:
               - n8n-nodes-globals
+              - n8n-nodes-wechat-formatter
+        npmRegistry:
+          enabled: true
+          url: http://mirrors.cloud.tencent.com/npm/
         redis:
           enabled: true
           image:
             registry: m.daocloud.io/docker.io
             repository: bitnamilegacy/redis
-          resources:
-            requests:
-              cpu: 1
-              memory: 1024Mi
-            limits:
-              cpu: 2
-              memory: 2048Mi
+          master:
+            resourcesPreset: "small"
           master:
             persistence:
               enabled: true
