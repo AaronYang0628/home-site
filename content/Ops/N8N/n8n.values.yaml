@@ -152,9 +152,6 @@ spec:
               cpu: 512m
               memory: 512Mi
   syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
     syncOptions:
       - CreateNamespace=true
       - ApplyOutOfSyncOnly=false
