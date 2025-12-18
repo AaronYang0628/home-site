@@ -18,8 +18,8 @@ spec:
           "HTTP_PROXY": "http://47.110.67.161:30890"
           "HTTPS_PROXY": "http://47.110.67.161:30890"
         image:
-          repository: m.daocloud.io/docker.io/n8nio/n8n
-          tag: 1.123.3-amd64
+          repository: your-registry/n8n
+          tag: 1.123.3-opencc
         log:
           level: info
         encryptionKey: "72602-n8n"
@@ -50,6 +50,8 @@ spec:
             "QUEUE_BULL_REDIS_TIMEOUT_THRESHOLD": "60000"
             "N8N_COMMUNITY_PACKAGES_ENABLED": "true"
             "N8N_GIT_NODE_DISABLE_BARE_REPOS": "true"
+            "NODE_FUNCTION_ALLOW_BUILTIN": "crypto,fs"
+            "NODE_FUNCTION_ALLOW_EXTERNAL": "opencc-js"
           persistence:
             enabled: true
             accessMode: ReadWriteOnce
@@ -77,6 +79,8 @@ spec:
             "QUEUE_BULL_REDIS_TIMEOUT_THRESHOLD": "60000"
             "N8N_COMMUNITY_PACKAGES_ENABLED": "true"
             "N8N_GIT_NODE_DISABLE_BARE_REPOS": "true"
+            "NODE_FUNCTION_ALLOW_BUILTIN": "crypto,fs"
+            "NODE_FUNCTION_ALLOW_EXTERNAL": "opencc-js"
           persistence:
             enabled: true
             accessMode: ReadWriteOnce
@@ -95,12 +99,12 @@ spec:
             modules:
               - crypto
               - fs
+              - @types/opencc-js@1.0.3
           external:
             allowAll: true
             packages:
               - n8n-nodes-globals
               - n8n-nodes-wechat-formatter
-              - opencc-js
         npmRegistry:
           enabled: true
           url: http://mirrors.cloud.tencent.com/npm/
