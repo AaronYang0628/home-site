@@ -95,12 +95,12 @@ spec:
             modules:
               - crypto
               - fs
-              - opencc-js
           external:
             allowAll: true
             packages:
               - n8n-nodes-globals
               - n8n-nodes-wechat-formatter
+              - opencc-js
         npmRegistry:
           enabled: true
           url: http://mirrors.cloud.tencent.com/npm/
@@ -111,7 +111,6 @@ spec:
             repository: bitnamilegacy/redis
           master:
             resourcesPreset: "small"
-          master:
             persistence:
               enabled: true
               accessMode: ReadWriteOnce
