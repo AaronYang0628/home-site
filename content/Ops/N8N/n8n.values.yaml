@@ -95,6 +95,7 @@ spec:
             modules:
               - crypto
               - fs
+              - opencc-js
           external:
             allowAll: true
             packages:
