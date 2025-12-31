@@ -52,6 +52,8 @@ spec:
             "N8N_GIT_NODE_DISABLE_BARE_REPOS": "true"
             "NODE_FUNCTION_ALLOW_BUILTIN": "crypto,fs"
             "NODE_FUNCTION_ALLOW_EXTERNAL": "opencc-js"
+            "N8N_LICENSE_AUTO_RENEW_ENABLED": "true"
+            "N8N_LICENSE_RENEW_ON_INIT": "true"
           persistence:
             enabled: true
             accessMode: ReadWriteOnce
@@ -81,6 +83,8 @@ spec:
             "N8N_GIT_NODE_DISABLE_BARE_REPOS": "true"
             "NODE_FUNCTION_ALLOW_BUILTIN": "crypto,fs"
             "NODE_FUNCTION_ALLOW_EXTERNAL": "opencc-js"
+            "N8N_LICENSE_AUTO_RENEW_ENABLED": "true"
+            "N8N_LICENSE_RENEW_ON_INIT": "true"
           persistence:
             enabled: true
             accessMode: ReadWriteOnce
